@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="branding/banner.svg" alt="SkinSkill Banner" width="100%">
+<img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/branding/banner.svg" alt="SkinSkill Banner" width="100%">
 
 # 🧬 SKINSKILL
 ### **The Ultimate Agentic OS for Developers**
@@ -64,20 +64,54 @@ Pre-loaded automation modules for:
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Installation & MCP Setup
 
-**1. Install the Engine:**
+SkinSkill connects to your AI via the Model Context Protocol (MCP). 
+
+**1. Install the Engine Globally:**
 ```bash
 uv add skinskill
 # or
 pip install skinskill
 ```
 
-**2. Zero-Touch Setup:**
+**2. Connect your IDE (Choose your setup):**
+
+<details open>
+<summary><b>🟦 Claude Desktop (Automatic Zero-Touch)</b></summary>
+<br>
+Run the following command in your terminal. SkinSkill will automatically detect and inject the MCP configuration into Claude Desktop.
+<br><br>
+
 ```bash
 tisc setup
 ```
-*(Automatically configures Claude Desktop. Compatible with Cursor, VS Code, Windsurf, and Gemini CLI via universal MCP command).*
+*Restart Claude Desktop to activate the engine.*
+</details>
+
+<details>
+<summary><b>🟧 Cursor / VS Code / Windsurf (Manual JSON Config)</b></summary>
+<br>
+For IDEs that support MCP via JSON configuration (or extensions like Claude Dev/RooCode), add the following block to your MCP Settings:
+<br><br>
+
+```json
+{
+  "mcpServers": {
+    "skinskill": {
+      "command": "python",
+      "args": ["-m", "skinskill.mcp_server"]
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>✨ Gemini CLI / Terminal Agents</b></summary>
+<br>
+If you are using Gemini CLI, Copilot CLI, or other terminal-based agents, SkinSkill acts natively! As long as the package is installed in your environment, terminal agents can invoke the server module directly via `python -m skinskill.mcp_server`.
+</details>
 
 ---
 
