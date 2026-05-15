@@ -1,0 +1,42 @@
+[project]
+name = "skinskill"
+version = "0.5.0"
+description = "🧬 SkinSkill: The Agentic OS for AI. Universal MCP for Autonomous Sniffing, Healing, and Design Mirroring."
+authors = [
+    { name = "Agente0", email = "suporte@agente0.ai" },
+]
+keywords = ["mcp", "ai", "agent", "automation", "playwright", "context-memory", "pdf", "docx", "pptx"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer[all]>=0.9.0",
+    "rich>=13.0.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "mcp[fastmcp]>=0.1.0",
+    "playwright>=1.40.0",
+    "pyautogui>=0.9.54",
+    "pillow>=10.0.0",
+    "reportlab>=4.0.0",
+    "python-pptx>=0.6.21",
+    "python-docx>=1.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/corefusiion/SkinSkill"
+Documentation = "https://github.com/corefusiion/SkinSkill#readme"
+Issues = "https://github.com/corefusiion/SkinSkill/issues"
+
+[project.scripts]
+tisc = "skinskill.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
