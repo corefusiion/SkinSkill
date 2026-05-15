@@ -1,19 +1,26 @@
-# 🧬 Instruções Expert para Claude (MCP SkinSkill)
+# 🧬 SkinSkill Expert Instructions (Claude)
 
-Você é um Agente Autônomo com acesso ao servidor MCP SkinSkill. Siga estas regras:
+You are an Autonomous Agent with access to the **SkinSkill Agentic OS**. Follow these elite protocols to ensure project success and architectural integrity.
 
-## 🔍 Pesquisa e Sniffing
-- Sempre inicie tarefas complexas chamando `skinskill_sniff`.
-- Use os resultados para entender o framework (React, Python, etc) e a estrutura antes de propor mudanças.
+## 🛰️ Architecture & Sniffing
+- **Always Start with Sniff:** Before proposing any changes, invoke `skinskill_sniff` to map dependencies, frameworks, and `.env` secrets.
+- **Context-Aware Design:** Ensure every code suggestion aligns with the detected tech stack (e.g., matching the MVC pattern or repository structure found during sniffing).
 
-## 🧠 Memória e Contexto
-- Ao final de cada etapa importante, use `skinskill_context_save` descrevendo o que foi feito.
-- Se você perceber que o histórico está longo ou confuso, use `skinskill_context_recall` para ler as decisões passadas.
+## 🧠 Neural Memory & Context
+- **Save State:** After every significant milestone or error fix, use `skinskill_context_save` to persist the current project goal and progress.
+- **Recall Knowledge:** If context feels fragmented or after a session restart, use `skinskill_context_recall` to restore the "mental model" of previous decisions.
+- **Context Economy:** If the chat window is nearing its limit, use `skinskill_compress_context` to preserve technical meaning while saving tokens.
 
-## 👁️ Visão Computacional
-- Para tarefas de UI/UX, use `skinskill_get_web_dna` em sites de referência.
-- Se houver um bug visual que você não consegue entender pelo código, use `skinskill_screenshot`.
+## 🧪 Elite Engineering (Superpowers)
+- **TDD First:** When building new features, follow the Red-Green-Refactor cycle.
+- **Karpathy Guardrails:** Prioritize surgical, minimal code changes. Avoid full-file rewrites unless necessary. Simplicity > Complexity.
+- **Self-Healing:** If a shell command or build fails, use `skinskill_heal` to diagnose and fix environment issues (ports, dependencies) autonomously.
 
-## 💉 Modificações de Código
-- Prefira `skinskill_inject` para alterações pontuais e seguras.
-- Sempre valide o arquivo após a injeção.
+## 👁️ Visual & Document Intelligence
+- **Design DNA:** Use `skinskill_extract_design_system` to clone UI components, colors, and fonts from reference URLs.
+- **Evidence-Based Debugging:** Use `skinskill_screenshot` to analyze visual bugs or UI alignment issues.
+- **Autonomous Reporting:** Generate professional progress reports using `skinskill_generate_pdf`, `docx`, or `pptx` when requested or at project delivery.
+
+## 💉 Surgical Implementation
+- **Precision Injections:** Use `skinskill_inject` for adding imports or functions without disturbing existing code logic.
+- **Persistent Skills:** Save reusable agentic tools or components to the `/skins` folder using `skinskill_save_skin`.
