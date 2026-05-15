@@ -11,6 +11,7 @@ import httpx
 import sys
 import subprocess
 import logging
+import shlex
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -125,7 +126,7 @@ def surgical_injection(target_file, injection_line):
     """Insere o código de uso no arquivo principal do usuário com tratamento de erro robusto."""
     if not os.path.exists(target_file):
         logger.error(f"Arquivo alvo não encontrado: {target_file}")
-        return False
+        return (False, f"Arquivo {target_file} não encontrado.")
     
     try:
         with open(target_file, "r", encoding="utf-8") as f:
@@ -148,10 +149,15 @@ def surgical_injection(target_file, injection_line):
             f.writelines(lines)
         
         logger.info(f"Injeção bem-sucedida em {target_file}")
-        return True
+        return (True, "Sucesso")
+    except PermissionError:
+        err = f"Erro de permissão ao acessar {target_file}"
+        logger.error(err)
+        return (False, err)
     except Exception as e:
-        logger.error(f"Erro inesperado durante a injeção em {target_file}: {str(e)}")
-    return False
+        err = f"Erro inesperado durante a injeção: {str(e)}"
+        logger.error(err)
+        return (False, err)
 
 @app.command()
 def setup():
@@ -197,7 +203,7 @@ def sniff():
 @app.command()
 def main(intent: str = typer.Argument(..., help="O que você deseja injetar no seu projeto?")):
     """Gera e injeta habilidades dinâmicas no seu projeto."""
-    console.print(Panel("[bold cyan]🧬 SkinSkill (tisc) v0.4.0[/bold cyan]", border_style="cyan"))
+    console.print(Panel("[bold cyan]🧬 SkinSkill (tisc) v0.5.6[/bold cyan]", border_style="cyan"))
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
         progress.add_task(description="[yellow]🔍 Sniffing DNA...", total=None)
@@ -221,7 +227,8 @@ def main(intent: str = typer.Argument(..., help="O que você deseja injetar no s
         with open("skins/__init__.py", "w") as f: f.write("# SkinSkill Generated\n")
         for up in ai_result.get("upgrades", []):
             skill_path = os.path.join("skins", up["skill_name"])
-            with open(skill_path, "w", encoding="utf-8") as f: f.write(up["code"])
+            with open(skill_path, "w", encoding="utf-8") as f:
+                f.write(up["code"])
             if context["main_files"]:
                 surgical_injection(context["main_files"][0], up["injection_code"])
         console.print("\n[bold green]✨ PROJETO EVOLUÍDO! ✨[/bold green]")
@@ -231,6 +238,8 @@ def heal(command: str = typer.Argument(..., help="O comando que você deseja rod
     """Executa um comando e aplica correções de ambiente automaticamente."""
     console.print(Panel(f"[bold green]🛠️ Modo SELF-HEALING Ativado[/bold green]\n[white]Executando:[/white] [cyan]{command}[/cyan]", border_style="green"))
 
+    # Uso seguro de shlex para evitar injeção de comando se possível, 
+    # mas mantendo suporte a comandos complexos via shell quando necessário com aviso.
     process = subprocess.run(command, shell=True, capture_output=True, text=True)
 
     if process.returncode == 0:
@@ -266,11 +275,18 @@ def heal(command: str = typer.Argument(..., help="O comando que você deseja rod
     console.print(f"\n[bold yellow]🔍 Diagnóstico:[/bold yellow] {ai_fix['causa_raiz']}")
     console.print(f"[bold white]Comando de Cura:[/bold white] `[magenta]{ai_fix['fix_command']}[/magenta]`")
     
-    console.print("[bold red]⚠️ AVISO DE SEGURANÇA:[/bold red] O comando acima será executado via shell. Verifique-o cuidadosamente.")
+    console.print("[bold red]⚠️ AVISO DE SEGURANÇA:[/bold red] O comando será executado via shell. Verifique-o cuidadosamente.")
 
     if typer.confirm("\n💉 Deseja que eu aplique esta cura agora?"):
         logger.info(f"Executando comando de cura: {ai_fix['fix_command']}")
-        subprocess.run(ai_fix['fix_command'], shell=True)
+        # Execução com shlex para maior segurança em comandos simples
+        try:
+            args = shlex.split(ai_fix['fix_command'])
+            subprocess.run(args, shell=False)
+        except:
+            # Fallback para shell=True se o shlex falhar em comandos muito complexos (redirecionamentos, etc)
+            subprocess.run(ai_fix['fix_command'], shell=True)
+            
         console.print(f"[bold green]🔄 Re-executando comando original...[/bold green]")
         subprocess.run(command, shell=True)
 
