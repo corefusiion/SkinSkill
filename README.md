@@ -11,89 +11,93 @@
 [![PyPI](https://img.shields.io/pypi/v/skinskill?style=for-the-badge&color=orange)]()
 
 **Stop babysitting your AI. Start building products.**  
-*SkinSkill is the autonomous engine that turns Claude, Cursor, Windsurf, and Gemini into senior engineers — featuring neural memory, self-healing terminals, UI DNA extraction, and a document engine. All via MCP.*
+*SkinSkill is the modular agentic engine that turns any AI assistant into a Senior Engineer with a persistent brain, computer vision, and an infinite arsenal of skills.*
 
-[Explore the Roadmap](ROADMAP.md) • [Report a Bug](https://github.com/corefusiion/SkinSkill/issues) • [Join the Community](#)
+[Roadmap](ROADMAP.md) • [Architecture](DECISIONS.md) • [Memory](MEMORY.md) • [Community](#)
 
 </div>
 
 ---
 
-## 🛑 The Problem: Your AI is Blind and Forgetful
-Claude, Cursor, and Gemini cannot see your local machine and lose context with every new session. You spend 30% of your day translating your project architecture into prompts, pasting terminal errors, and starting every chat from zero.
+## 🔥 Why SkinSkill?
 
-## 💡 The Solution: Eyes, Hands, and a Neural Brain
-SkinSkill connects your AI to your machine via the **Model Context Protocol (MCP)**. It provides persistent memory, a self-healing terminal, UI DNA extraction, and a document engine out-of-the-box. Batteries included.
+Standard AI assistants are **blind** to your local environment and **amnesic** between sessions. You waste half your day re-explaining context and fixing environment errors.
+
+**SkinSkill transforms your AI from an "Assistant" into an "Autonomous Agent".** It injects a professional-grade operating system into your workflow via the **Model Context Protocol (MCP)**.
 
 ---
 
-## 🚀 Quick Start (Zero-Touch Installation)
+## 💎 The 7+ Elite Superpowers
 
-Get SkinSkill running in seconds. No complex JSON configuration needed.
+SkinSkill v0.5.x comes "Batteries Included" with a modular engine that expands as you grow.
 
-**1. Install the package:**
+### 🧠 1. Neural Memory & Token Economy
+The AI finally has a **long-term brain**. It remembers decisions, goals, and errors across sessions and different LLMs.
+*   **Caveman Compression:** Save up to **70% of tokens** while preserving technical meaning.
+
+### 🏥 2. Self-Healing Terminal (Zero Copy-Paste)
+Build broke? Port 3000 in use? Zombie process? 
+*   The AI intercepts terminal errors, identifies the root cause, and **fixes the environment autonomously** with your permission.
+
+### 👁️ 3. Design DNA & Computer Vision
+Your IA gains "Eyes" to see the internet like a Frontend Senior.
+*   **UI Mirroring:** Extract exact CSS, colors, and fonts from any URL.
+*   **Screenshot Debugging:** AI takes snapshots of your screen to fix visual bugs in real-time.
+
+### 📄 4. Document & Office Engine
+Turn your progress into professional artifacts instantly.
+*   Generate **PDF** reports, **PPTX** pitch decks, and **DOCX** briefs directly from your code logic.
+
+### 🚀 5. Engineering Superpowers (Karpathy Mode)
+Forces the AI to work like the top 1% of engineers.
+*   **Architecture Sniffing:** Instant mapping of legacy repos.
+*   **TDD Enforcement:** Native Test-Driven Development flow.
+*   **Karpathy Guardrails:** Surgical, minimal, and simple code changes only.
+
+### 🛠️ 6. Skill Creator (Meta-Ability)
+The OS is **self-evolving**. You can tell the IA to "learn a new trick," and it will autonomously write, test, and install a new "Skin" (tool) into your project.
+
+### 📦 7. Batteries Included (`skills_BAT`)
+Pre-loaded automation modules for:
+*   **Communication:** Email (Send/Read) & Google Calendar integration.
+*   **Orchestration:** Multi-agent workflows and smart-routing.
+
+---
+
+## ⚡ Quick Start
+
+**1. Install the Engine:**
 ```bash
 uv add skinskill
 # or
 pip install skinskill
 ```
 
-**2. Auto-Connect to your AI:**
+**2. Zero-Touch Setup:**
 ```bash
 tisc setup
 ```
-*(This automatically configures the MCP server for Claude Desktop. For Cursor, VS Code, Windsurf, or Gemini CLI, simply add `python -m skinskill.mcp_server` to your MCP settings).*
-
----
-
-## 💎 Elite Arsenal (5 Superpowers)
-
-SkinSkill comes pre-loaded with elite logic adapted from the world's best agentic frameworks.
-
-### 🧠 1. Neural Memory
-Context persistence across sessions and models. 
-*   **Memory Recall:** Switch from Claude to Gemini without losing the thread. The new model picks up exactly where the previous one left off.
-*   **Caveman Compression:** Save up to **70% of tokens** while preserving technical intent during massive refactors.
-
-### 📄 2. Document Engine
-Autonomous generation of professional artifacts.
-*   Generate executive **PDF** reports, **PPTX** pitch decks (using the AIDA framework), and **DOCX** briefs directly from your project's real progress.
-
-### 🎨 3. Design DNA
-Extract color palettes, fonts, design tokens, and CSS from any URL.
-*   Achieve surgical UI cloning straight into your project (e.g., extracting Tailwind + shadcn ready components).
-
-### 🏥 4. Self-Healing
-Automatic detection and fixing of environment errors.
-*   Zero copy-paste. The AI reads stack traces, spots busy ports, divergent `.env` files, and zombie processes, killing and restarting them for you.
-
-### 🚀 5. Engineering Superpowers
-Elite discipline built-in.
-*   **Architecture Sniffing:** Maps 200-file legacy repos in seconds to build a perfect mental model.
-*   **Karpathy Mode:** Native enforcement of TDD (Test-Driven Development) and minimal, surgical code changes.
+*(Automatically configures Claude Desktop. Compatible with Cursor, VS Code, Windsurf, and Gemini CLI via universal MCP command).*
 
 ---
 
 ## 🛠️ Real-World Scenarios
 
-How SkinSkill acts day-to-day when you take the AI out of "assistant" mode and put it in full "agent" mode:
+### 📂 Scenario 1: The 2 AM Build Break
+> **You:** *"The project won't start. Fix it."*
+> **SkinSkill:** Detects a port conflict and a missing `.env` key. Frees the port, syncs the env, and restarts the server.
 
-### 🐛 Scenario 1: The 2 AM Build Break (Self-Healing)
-> **You:** *"The build just broke and the server won't start. Fix it."*
-> **SkinSkill:** Reads the stack trace, detects that port 3000 is stuck by a zombie process and a `.env` variable is missing. It frees the port, syncs the env, and restarts the build successfully.
+### 🎨 Scenario 2: Instant Component UI
+> **You:** *"Clone the header style from `stripe.com` and create a React component."*
+> **SkinSkill:** Opens a headless browser, captures the design tokens, and saves the file in `/skins`.
 
-### 🎨 Scenario 2: UI Cloning in Minutes (Design DNA)
-> **You:** *"Clone the pricing UI from `https://linear.app/pricing` into a new React component."*
-> **SkinSkill:** The headless browser captures exact typography, color tokens, and spacings. The component ships ready in your `/skins` folder.
-
-### 💼 Scenario 3: Pitch Ready (Document Engine)
-> **You:** *"Summarize our progress on the new Auth flow and generate a PPTX pitch for the investors."*
-> **SkinSkill:** Analyzes the committed code, applies copywriting formulas, and outputs `pitch.pptx` locally.
+### 💼 Scenario 3: Automated Delivery
+> **You:** *"We finished the Auth flow. Generate a PDF report and a PPTX presentation for the PO."*
+> **SkinSkill:** Analyzes the work, writes the copy, and outputs the files.
 
 ---
 
 <div align="center">
-  <h3>Universal Engine • Powered by MCP</h3>
-  One install, every agent. SkinSkill speaks Model Context Protocol.<br>
-  <b>Claude • Cursor • Windsurf • VS Code • Gemini CLI</b>
+  <h3>The Agentic Revolution is here.</h3>
+  Maintained by the <b>SkinSkill Community</b>.
 </div>
