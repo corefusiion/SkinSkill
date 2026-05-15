@@ -14,3 +14,13 @@
 - **Data:** 14/05/2026
 - **Contexto:** A visão computacional depende de navegadores pesados.
 - **Decisão:** Automatizar a instalação via subprocesso na primeira execução do MCP para garantir a experiência "Zero-Config".
+
+## 004: Segurança no Comando Heal (shlex)
+- **Data:** 15/05/2026
+- **Contexto:** Executar comandos sugeridos pela IA via `shell=True` era arriscado.
+- **Decisão:** Refatorar para usar `shlex.split` e avisos de segurança explícitos, minimizando riscos de injeção de comando.
+
+## 005: Extração Visual Completa
+- **Data:** 15/05/2026
+- **Contexto:** O truncamento de HTML/CSS impedia a clonagem de UIs complexas.
+- **Decisão:** Remover limites de caracteres no `get_web_dna` para permitir captura total de design tokens.
