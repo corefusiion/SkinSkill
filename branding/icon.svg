@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="neural_grad" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Base -->
+  <path d="M128 20L40 70V186L128 236L216 186V70L128 20Z" fill="#0A0A0B" stroke="url(#neural_grad)" stroke-width="4"/>
+  
+  <!-- Neural Core -->
+  <circle cx="128" cy="128" r="40" fill="url(#neural_grad)" filter="url(#glow)" opacity="0.8">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Modular Nodes -->
+  <rect x="118" y="60" width="20" height="20" rx="4" fill="#10B981" />
+  <rect x="118" y="176" width="20" height="20" rx="4" fill="#10B981" />
+  <rect x="65" y="148" width="20" height="20" rx="4" fill="#10B981" />
+  <rect x="171" y="148" width="20" height="20" rx="4" fill="#10B981" />
+  <rect x="65" y="88" width="20" height="20" rx="4" fill="#10B981" />
+  <rect x="171" y="88" width="20" height="20" rx="4" fill="#10B981" />
+  
+  <!-- Connection Lines -->
+  <path d="M128 80V100M128 156V176M85 98L100 110M156 98L141 110M85 158L100 146M156 158L141 146" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+</svg>

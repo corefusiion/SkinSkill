@@ -1,0 +1,32 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="300" fill="#0A0A0B"/>
+  <defs>
+    <linearGradient id="banner_grad" x1="0" y1="0" x2="1200" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17171A"/>
+      <stop offset="0.5" stop-color="#0A0A0B"/>
+      <stop offset="1" stop-color="#17171A"/>
+    </linearGradient>
+    <linearGradient id="line_grad" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#6366F1" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#6366F1" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="300" fill="url(#banner_grad)"/>
+  
+  <!-- Circuit Grid Background -->
+  <path d="M0 50H1200M0 100H1200M0 150H1200M0 200H1200M0 250H1200" stroke="url(#line_grad)" stroke-width="1"/>
+  <path d="M100 0V300M200 0V300M300 0V300M400 0V300M500 0V300M600 0V300M700 0V300M800 0V300M900 0V300M1000 0V300M1100 0V300" stroke="url(#line_grad)" stroke-width="1"/>
+
+  <!-- Logo Center -->
+  <g transform="translate(450, 80) scale(0.6)">
+    <path d="M128 20L40 70V186L128 236L216 186V70L128 20Z" fill="#0A0A0B" stroke="#6366F1" stroke-width="8"/>
+    <circle cx="128" cy="128" r="50" fill="#6366F1" opacity="0.2">
+      <animate attributeName="r" values="45;55;45" dur="4s" repeatCount="indefinite" />
+    </circle>
+  </g>
+  
+  <text x="600" y="160" text-anchor="middle" fill="#F8FAFC" style="font-family: sans-serif; font-weight: bold; font-size: 80px; letter-spacing: -4px;">SKINSKILL</text>
+  <text x="600" y="200" text-anchor="middle" fill="#10B981" style="font-family: sans-serif; font-size: 24px; letter-spacing: 12px; text-transform: uppercase;">The Agentic OS</text>
+</svg>

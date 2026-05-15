@@ -1,7 +1,9 @@
 <div align="center">
 
+<img src="branding/banner.svg" alt="SkinSkill Banner" width="100%">
+
 # 🧬 SKINSKILL
-### **The Autonomous Agentic OS for Modern Developers**
+### **The Autonomous Agentic OS for Developers**
 
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blueviolet?style=for-the-badge&logo=ai)]()
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)]()
@@ -9,7 +11,7 @@
 [![PyPI](https://img.shields.io/pypi/v/skinskill?style=for-the-badge&color=orange)]()
 
 **Stop babysitting your AI. Start building products.**  
-*SkinSkill is the background engine that transforms standard AI assistants into Senior Engineers with local environment awareness and a massive arsenal of elite skills.*
+*SkinSkill is the background engine that transforms standard AI assistants into Senior Engineers with local environment awareness and an elite arsenal of skills.*
 
 [Explore the Roadmap](ROADMAP.md) • [Report a Bug](https://github.com/corefusiion/SkinSkill/issues) • [Join the Community](#)
 
@@ -29,7 +31,7 @@ Most AI assistants (Claude, Cursor, Gemini) are **blind** to your local machine 
 
 ---
 
-## 💎 Elite Habilidades (Built-in Superpowers)
+## 💎 Elite Skills (Built-in Superpowers)
 
 SkinSkill v0.5.x comes "Batteries Included" with elite logic adapted from the world's best agentic frameworks:
 

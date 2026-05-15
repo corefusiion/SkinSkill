@@ -1,0 +1,19 @@
+{
+  "brand": {
+    "primary": "#6366F1",
+    "secondary": "#10B981",
+    "accent": "#F43F5E",
+    "background": "#0A0A0B",
+    "surface": "#17171A",
+    "text": {
+      "primary": "#F8FAFC",
+      "secondary": "#94A3B8",
+      "muted": "#475569"
+    }
+  },
+  "gradients": {
+    "neural": "linear-gradient(135deg, #6366F1 0%, #A855F7 100%)",
+    "execution": "linear-gradient(135deg, #10B981 0%, #3B82F6 100%)",
+    "dark": "linear-gradient(180deg, #17171A 0%, #0A0A0B 100%)"
+  }
+}
