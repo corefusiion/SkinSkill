@@ -37,7 +37,8 @@ def ensure_skins_package():
         logger.error(f"Erro ao configurar pacote skins: {e}")
 
 def ensure_visual_engines():
-    """Garante que o Playwright está instalado apenas quando necessário (Lazy Loading)."""
+    """Garante que o Playwright está instalado com uma UI profissional (Rich)."""
+    import sys
     try:
         registry_path = ".skinskill/registry.json"
         os.makedirs(".skinskill", exist_ok=True)
@@ -49,10 +50,25 @@ def ensure_visual_engines():
             except: pass
 
         if not reg.get("browsers_installed"):
-            print("🧬 SkinSkill: Instalando motores visuais (Playwright) sob demanda... Aguarde.", file=sys.stderr)
-            subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], capture_output=True)
+            from rich.console import Console
+            from rich.progress import Progress, SpinnerColumn, TextColumn
+            
+            # Console exclusivo para stderr para não poluir o stdout do MCP
+            err_console = Console(stderr=True)
+            
+            with Progress(
+                SpinnerColumn(spinner_name="dots12", style="bold cyan"),
+                TextColumn("[bold cyan]{task.description}"),
+                console=err_console,
+                transient=True
+            ) as progress:
+                progress.add_task(description="🧬 SkinSkill: Otimizando Motores Visuais (Playwright)...", total=None)
+                # O processamento pesado acontece em silêncio no background
+                subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], capture_output=True)
+            
             reg["browsers_installed"] = True
             with open(registry_path, "w") as f: json.dump(reg, f)
+            err_console.print("[bold green]✨ Motores Visuais Prontos![/bold green]")
             return True
         return True
     except Exception as e:
