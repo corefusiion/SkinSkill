@@ -36,9 +36,18 @@ def deep_sniff():
         "structure": [],
         "configs": {},
         "main_files": [],
-        "env_keys": []
+        "env_keys": [],
+        "neural_index_present": os.path.exists(".skinskill/memory_graph.json")
     }
     
+    # Busca por índice neural para economizar tokens
+    if context["neural_index_present"]:
+        try:
+            with open(".skinskill/memory_graph.json", "r", encoding="utf-8") as f:
+                index = json.load(f)
+                context["neural_summary"] = "Índice Neural detectado. O projeto possui mapeamento semântico pronto para consulta."
+        except: pass
+
     for root, dirs, files in os.walk(".", topdown=True):
         if any(x in root for x in ["venv", ".git", "__pycache__", "node_modules", ".dev"]):
             continue
@@ -59,70 +68,7 @@ def deep_sniff():
                     context["configs"][cf] = f.read(1000)
             except: pass
 
-    if os.path.exists(".env"):
-        try:
-            with open(".env", "r") as f:
-                for line in f:
-                    if "=" in line and not line.startswith("#"):
-                        context["env_keys"].append(line.split("=")[0].strip())
-        except: pass
-
     return context
-
-def ask_llm(context, intent):
-    """Envia o contexto e solicita a criação real de Skills."""
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        return {"error": "OPENROUTER_API_KEY não encontrada no .env"}
-
-    cache_dir = ".skinskill"
-    os.makedirs(cache_dir, exist_ok=True)
-    cache_file = os.path.join(cache_dir, "cache.json")
-    cache = {}
-    if os.path.exists(cache_file):
-        try:
-            with open(cache_file, "r") as f: cache = json.load(f)
-        except: pass
-    
-    cache_key = f"{intent}_{len(str(context))}"
-    if cache_key in cache: return cache[cache_key]
-
-    prompt = f"""
-    Você é o SkinSkill, um OS Agêntico.
-    CONTEXTO DO PROJETO: {context}
-    INTENÇÃO DO USUÁRIO: "{intent}"
-    
-    Gere o código real para resolver isso.
-    Retorne um JSON com:
-    1. 'framework_detected': string.
-    2. 'upgrades': Lista de objetos:
-       - 'tipo': Core/Surpresa/Shield
-       - 'skill_name': nome_do_arquivo.py
-       - 'impacto': descrição
-       - 'code': Código Python completo
-       - 'test_code': Código de teste unitário simples (usando assert) para validar a skill
-       - 'injection_code': Uma linha de código para importar e usar
-    3. 'anticipation_note': Frase de impacto.
-    """
-
-    try:
-        response = httpx.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json={
-                "model": "google/gemini-2.0-flash-001",
-                "messages": [{"role": "user", "content": prompt}],
-                "response_format": {"type": "json_object"}
-            },
-            timeout=60.0
-        )
-        response.raise_for_status()
-        result = json.loads(response.json()['choices'][0]['message']['content'])
-        cache[cache_key] = result
-        with open(cache_file, "w") as f: json.dump(cache, f)
-        return result
-    except Exception as e:
-        return {"error": str(e)}
 
 def validate_skill(skill_code, test_code, skill_name):
     """Executa o teste da skill em um ambiente temporário para garantir que funciona."""
@@ -136,12 +82,15 @@ def validate_skill(skill_code, test_code, skill_name):
         f.write(skill_code)
     
     # Adiciona o diretório atual ao path para o teste encontrar a skill
-    validated_test_code = f"import sys\nsys.path.append(r'{temp_dir.absolute()}')\n{test_code}"
+    validated_test_code = f"import sys\nimport os\nsys.path.append(r'{temp_dir.absolute()}')\n{test_code}"
     with open(test_file, "w", encoding="utf-8") as f:
         f.write(validated_test_code)
         
     try:
-        result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, timeout=10)
+        # Executa com PYTHONPATH configurado
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(temp_dir.absolute())
+        result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, timeout=15, env=env)
         if result.returncode == 0:
             return (True, "✅ Testes aprovados!")
         else:
@@ -269,58 +218,36 @@ def sniff():
     console.print(Panel(json.dumps(context, indent=2), title="🧬 DNA do Projeto", border_style="green"))
 
 @app.command()
-def main(intent: str = typer.Argument(..., help="O que você deseja injetar no seu projeto?")):
-    """Gera e injeta habilidades dinâmicas no seu projeto com validação automática."""
-    console.print(Panel("[bold cyan]🧬 SkinSkill (tisc) v0.5.6[/bold cyan]", border_style="cyan"))
+def main(intent: str = typer.Argument(..., help="O que você deseja que a IA faça no seu projeto?")):
+    """Prepara o contexto neural para que VOCÊ (via Chat IA) possa gerar novas habilidades com 100% de precisão."""
+    console.print(Panel("[bold cyan]🧬 SkinSkill (tisc) v0.5.8[/bold cyan]", border_style="cyan"))
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
-        progress.add_task(description="[yellow]🔍 Sniffing DNA...", total=None)
+        progress.add_task(description="[yellow]🔍 Mapeando DNA do Projeto...", total=None)
         context = deep_sniff()
-        progress.add_task(description="[magenta]🧠 Gerando e Validando Habilidades...", total=None)
-        ai_result = ask_llm(context, intent)
-
-    if "error" in ai_result:
-        console.print(f"[red]❌ Erro: {ai_result['error']}[/red]")
-        return
-
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Skill")
-    table.add_column("Status de Validação")
-    table.add_column("Impacto")
+        
+    console.print("\n[bold green]✅ Contexto Neural Preparado![/bold green]")
+    console.print("Para economizar tokens e garantir o melhor resultado, copie o comando abaixo e cole no seu chat de IA (Claude/ChatGPT/Gemini):")
     
-    valid_upgrades = []
-    
-    for up in ai_result.get("upgrades", []):
-        success, msg = validate_skill(up["code"], up.get("test_code", ""), up["skill_name"])
-        status_color = "green" if success else "red"
-        table.add_row(up["skill_name"], f"[{status_color}]{msg}[/{status_color}]", up["impacto"])
-        if success:
-            valid_upgrades.append(up)
-    
-    console.print(table)
+    prompt_box = f"""
+--- SKINSKILL CONTEXT PROMPT ---
+Estou usando o SkinSkill MCP. Preciso que você gere uma nova habilidade (Skin) para: "{intent}"
 
-    if not valid_upgrades:
-        console.print("[yellow]⚠️ Nenhuma habilidade passou na validação. Operação cancelada para sua segurança.[/yellow]")
-        return
+CONTEXTO DO MEU PROJETO:
+{json.dumps(context, indent=2)}
 
-    if typer.confirm("\n🚀 Aplicar habilidades validadas agora?"):
-        os.makedirs("skins", exist_ok=True)
-        with open("skins/__init__.py", "w") as f: f.write("# SkinSkill Generated\n")
-        for up in valid_upgrades:
-            skill_path = os.path.join("skins", up["skill_name"])
-            with open(skill_path, "w", encoding="utf-8") as f:
-                f.write(up["code"])
-            if context["main_files"]:
-                surgical_injection(context["main_files"][0], up["injection_code"])
-        console.print("\n[bold green]✨ PROJETO EVOLUÍDO COM SEGURANÇA! ✨[/bold green]")
+INSTRUÇÕES PARA A IA:
+Gere um JSON com o código da habilidade e um teste unitário. 
+Quando estiver pronto, use a ferramenta 'skinskill_forge_validate_and_save' para validar e instalar.
+--------------------------------
+"""
+    console.print(Syntax(prompt_box, "markdown", theme="monokai"))
 
 @app.command()
 def heal(command: str = typer.Argument(..., help="O comando que você deseja rodar e auto-curar.")):
-    """Executa um comando e aplica correções de ambiente automaticamente."""
-    console.print(Panel(f"[bold green]🛠️ Modo SELF-HEALING Ativado[/bold green]\n[white]Executando:[/white] [cyan]{command}[/cyan]", border_style="green"))
+    """Executa um comando e, se falhar, prepara o diagnóstico para você enviar à sua IA."""
+    console.print(Panel(f"[bold green]🛠️ Modo SELF-HEALING (Manual Context)[/bold green]\n[white]Executando:[/white] [cyan]{command}[/cyan]", border_style="green"))
 
-    # Uso seguro de shlex para evitar injeção de comando se possível, 
-    # mas mantendo suporte a comandos complexos via shell quando necessário com aviso.
     process = subprocess.run(command, shell=True, capture_output=True, text=True)
 
     if process.returncode == 0:
@@ -331,45 +258,9 @@ def heal(command: str = typer.Argument(..., help="O comando que você deseja rod
     error_log = process.stderr or process.stdout
     console.print(f"[bold red]❌ Falha detectada![/bold red]")
     
-    with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
-        progress.add_task(description="[magenta]🧠 IA diagnosticando o ambiente...", total=None)
-        
-        api_key = os.getenv("OPENROUTER_API_KEY")
-        prompt = f"O comando '{command}' falhou com este erro:\n{error_log}\nRetorne um JSON com 'causa_raiz', 'fix_command' e 'explicacao'."
-        
-        try:
-            response = httpx.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={
-                    "model": "google/gemini-2.0-flash-001",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "response_format": {"type": "json_object"}
-                },
-                timeout=40.0
-            )
-            ai_fix = json.loads(response.json()['choices'][0]['message']['content'])
-        except Exception as e:
-            console.print(f"[red]Erro na IA: {e}[/red]")
-            return
-
-    console.print(f"\n[bold yellow]🔍 Diagnóstico:[/bold yellow] {ai_fix['causa_raiz']}")
-    console.print(f"[bold white]Comando de Cura:[/bold white] `[magenta]{ai_fix['fix_command']}[/magenta]`")
-    
-    console.print("[bold red]⚠️ AVISO DE SEGURANÇA:[/bold red] O comando será executado via shell. Verifique-o cuidadosamente.")
-
-    if typer.confirm("\n💉 Deseja que eu aplique esta cura agora?"):
-        logger.info(f"Executando comando de cura: {ai_fix['fix_command']}")
-        # Execução com shlex para maior segurança em comandos simples
-        try:
-            args = shlex.split(ai_fix['fix_command'])
-            subprocess.run(args, shell=False)
-        except:
-            # Fallback para shell=True se o shlex falhar em comandos muito complexos (redirecionamentos, etc)
-            subprocess.run(ai_fix['fix_command'], shell=True)
-            
-        console.print(f"[bold green]🔄 Re-executando comando original...[/bold green]")
-        subprocess.run(command, shell=True)
+    console.print("\n[bold yellow]🔍 Diagnóstico Gerado![/bold yellow]")
+    console.print("Copie o erro abaixo para sua IA propor a correção via 'fix_command':")
+    console.print(Panel(error_log, title="Erro de Saída", border_style="red"))
 
 if __name__ == "__main__":
     app()
