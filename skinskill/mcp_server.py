@@ -210,31 +210,50 @@ def skinskill_generate_xlsx(content: str, filename: str = "planilha.xlsx"):
         return f"Erro ao gerar XLSX: {str(e)}"
 
 @mcp.tool()
-async def skinskill_heal(failed_command: str, error_log: str):
-    """[SHIELD] Diagnostica e sugere/aplica correções para comandos que falharam."""
-    import httpx
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        return "Erro: OPENROUTER_API_KEY não configurada."
-
-    prompt = f"O comando '{failed_command}' falhou com este erro:\n{error_log}\nRetorne um JSON com 'causa_raiz', 'fix_command' e 'explicacao'."
+def skinskill_forge_validate_and_save(skill_name: str, code: str, test_code: str, impact_description: str):
+    """[HANDS] O 'Cérebro' (Você, a IA) gera o código e o teste, e eu (SkinSkill) valido e instalo. 
+    Isso permite criar habilidades sem precisar de chaves de API extras.
+    """
+    from skinskill.cli import validate_skill, surgical_injection
     
+    # 1. Validação em Sandbox
+    success, msg = validate_skill(code, test_code, skill_name)
+    
+    if not success:
+        return f"❌ Falha na Validação da Skill: {msg}\nPor favor, corrija o código ou o teste e tente novamente."
+    
+    # 2. Instalação Real
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={
-                    "model": "google/gemini-2.0-flash-001",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "response_format": {"type": "json_object"}
-                },
-                timeout=40.0
-            )
-            ai_fix = json.loads(response.json()['choices'][0]['message']['content'])
-            return json.dumps(ai_fix, indent=2)
+        os.makedirs("skins", exist_ok=True)
+        with open("skins/__init__.py", "w") as f: f.write("# SkinSkill Generated\n")
+        
+        skill_path = os.path.join("skins", skill_name)
+        with open(skill_path, "w", encoding="utf-8") as f:
+            f.write(code)
+            
+        # Tenta injetar no arquivo principal se detectado
+        context = deep_sniff()
+        if context["main_files"]:
+             # Gera uma linha de injeção padrão baseada no nome da skill
+             module_name = skill_name.replace(".py", "")
+             injection_line = f"from skins.{module_name} import *; # Habilidade Autônoma Ativada"
+             surgical_injection(context["main_files"][0], injection_line)
+             
+        return f"✅ SUCESSO! Habilidade '{skill_name}' validada, testada e instalada.\nImpacto: {impact_description}"
     except Exception as e:
-        return f"Erro ao processar cura via IA: {str(e)}"
+        return f"❌ Erro ao salvar skill: {str(e)}"
+
+@mcp.tool()
+def skinskill_heal_context(failed_command: str, error_log: str):
+    """[SHIELD] Fornece contexto detalhado sobre uma falha de comando para que VOCÊ (a IA) possa decidir a melhor cura."""
+    # Em vez de chamar uma API, nós damos o contexto do sistema para a IA que está chamando a tool
+    context = deep_sniff()
+    return json.dumps({
+        "failed_command": failed_command,
+        "error_log": error_log,
+        "system_context": context,
+        "instruction": "Analise o erro e o contexto acima para propor um comando de correção (fix_command)."
+    }, indent=2)
 
 @mcp.tool()
 def skinskill_compress_context(text: str):
