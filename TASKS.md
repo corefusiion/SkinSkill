@@ -1,8 +1,10 @@
 # ✅ Tasks & Backlog
 
-## 🛠️ Prioridade Alta (Imediato)
-- [ ] Refinar `skinskill_heal` para suportar comandos de rede mais complexos.
-- [ ] Otimizar o tamanho da captura de DNA Web (limitar tokens).
+## 🛠️ Prioridade Alta (Concluído/Em Andamento)
+- [x] Expor geradores de DOCX, PPTX e XLSX no Servidor MCP.
+- [x] Implementar ferramenta `skinskill_heal` no Servidor MCP.
+- [x] Melhorar `skinskill_screenshot` com suporte a URLs via Playwright (Headless support).
+- [x] Refinar `skinskill_extract_design_system` com modos de extração para economizar tokens.
 - [ ] Criar testes unitários para a Memória Neural.
 
 ## 📈 Melhorias Futuras

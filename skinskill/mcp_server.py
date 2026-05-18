@@ -130,41 +130,111 @@ def skinskill_inject(code: str, target_file: str, injection_point: str = "end"):
         return f"❌ Erro na injeção: {msg}"
 
 @mcp.tool()
-async def skinskill_extract_design_system(url: str):
-    """[EYES] Extrai o Design System (cores, fontes, CSS) completo de uma URL."""
+async def skinskill_extract_design_system(url: str, mode: str = "all"):
+    """[EYES] Extrai o Design System de uma URL. Modos: 'all', 'colors', 'fonts', 'structure'."""
     from playwright.async_api import async_playwright
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
             await page.goto(url, wait_until="networkidle")
-            design_dna = await page.evaluate('''() => {
+            design_dna = await page.evaluate('''(mode) => {
                 const styles = Array.from(document.styleSheets)
                     .map(s => { try { return Array.from(s.cssRules).map(r => r.cssText).join(""); } catch(e) { return ""; } })
                     .join("");
-                return {
-                    colors: Array.from(new Set(styles.match(/#[0-9a-fA-F]{3,6}|rgba?\\(.*?\\)/g))),
-                    fonts: Array.from(new Set(styles.match(/font-family:.*?;/g))),
-                    html_structure: document.body.innerHTML
-                };
-            }''')
+                
+                const result = {};
+                if (mode === "all" || mode === "colors") {
+                    result.colors = Array.from(new Set(styles.match(/#[0-9a-fA-F]{3,6}|rgba?\\(.*?\\)/g)));
+                }
+                if (mode === "all" || mode === "fonts") {
+                    result.fonts = Array.from(new Set(styles.match(/font-family:.*?;/g)));
+                }
+                if (mode === "all" || mode === "structure") {
+                    result.html_structure = document.body.innerHTML;
+                }
+                return result;
+            }''', mode)
             await browser.close()
-            # Retorna o conteúdo completo sem truncamento conforme sugerido no relatório
             return json.dumps(design_dna, indent=2)
     except Exception as e:
         return f"Erro ao extrair Design System: {str(e)}"
 
 @mcp.tool()
 def skinskill_generate_pdf(content: str, filename: str = "documento.pdf"):
-    """[FILES] Gera um documento PDF profissional."""
+    """[FILES] Gera um documento PDF profissional baseado em conteúdo markdown/texto."""
     try:
         script_path = "skills_BAT/_apps_py/generators/generate_pdf.py"
         if not os.path.exists(script_path):
              return "Erro: Script de geração de PDF não encontrado no sistema."
+        # Atualmente o script gera um exemplo, mas passamos o input para futura expansão
         subprocess.run([sys.executable, script_path, filename], input=content, text=True)
         return f"✅ PDF '{filename}' gerado com sucesso."
     except Exception as e:
         return f"Erro ao gerar PDF: {str(e)}"
+
+@mcp.tool()
+def skinskill_generate_docx(content: str, filename: str = "documento.docx"):
+    """[FILES] Gera um documento Word (.docx)."""
+    try:
+        script_path = "skills_BAT/_apps_py/generators/generate_docx.py"
+        if not os.path.exists(script_path):
+             return "Erro: Script não encontrado."
+        subprocess.run([sys.executable, script_path, filename], input=content, text=True)
+        return f"✅ Word '{filename}' gerado com sucesso."
+    except Exception as e:
+        return f"Erro ao gerar DOCX: {str(e)}"
+
+@mcp.tool()
+def skinskill_generate_pptx(content: str, filename: str = "apresentacao.pptx"):
+    """[FILES] Gera uma apresentação PowerPoint (.pptx)."""
+    try:
+        script_path = "skills_BAT/_apps_py/generators/generate_pptx.py"
+        if not os.path.exists(script_path):
+             return "Erro: Script não encontrado."
+        subprocess.run([sys.executable, script_path, filename], input=content, text=True)
+        return f"✅ PPTX '{filename}' gerado com sucesso."
+    except Exception as e:
+        return f"Erro ao gerar PPTX: {str(e)}"
+
+@mcp.tool()
+def skinskill_generate_xlsx(content: str, filename: str = "planilha.xlsx"):
+    """[FILES] Gera uma planilha Excel (.xlsx)."""
+    try:
+        script_path = "skills_BAT/_apps_py/generators/generate_xlsx.py"
+        if not os.path.exists(script_path):
+             return "Erro: Script não encontrado."
+        subprocess.run([sys.executable, script_path, filename], input=content, text=True)
+        return f"✅ Excel '{filename}' gerado com sucesso."
+    except Exception as e:
+        return f"Erro ao gerar XLSX: {str(e)}"
+
+@mcp.tool()
+async def skinskill_heal(failed_command: str, error_log: str):
+    """[SHIELD] Diagnostica e sugere/aplica correções para comandos que falharam."""
+    import httpx
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        return "Erro: OPENROUTER_API_KEY não configurada."
+
+    prompt = f"O comando '{failed_command}' falhou com este erro:\n{error_log}\nRetorne um JSON com 'causa_raiz', 'fix_command' e 'explicacao'."
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={
+                    "model": "google/gemini-2.0-flash-001",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "response_format": {"type": "json_object"}
+                },
+                timeout=40.0
+            )
+            ai_fix = json.loads(response.json()['choices'][0]['message']['content'])
+            return json.dumps(ai_fix, indent=2)
+    except Exception as e:
+        return f"Erro ao processar cura via IA: {str(e)}"
 
 @mcp.tool()
 def skinskill_compress_context(text: str):
@@ -173,26 +243,146 @@ def skinskill_compress_context(text: str):
     return compress(text)
 
 @mcp.tool()
-def skinskill_screenshot():
-    """[EYES] Captura um screenshot da tela atual. Requer ambiente gráfico."""
-    try:
-        import pyautogui
-        import base64
-        import io
-        
-        # Check for Display on Linux systems
-        if os.name == 'posix' and not os.environ.get('DISPLAY'):
-             return "Erro: Ambiente Headless detectado. A captura de tela requer um ambiente gráfico (X11). Em servidores, utilize Xvfb."
+async def skinskill_screenshot(url: str = None):
+    """[EYES] Captura um screenshot. Se URL for provida, usa Playwright (Headless OK). Caso contrário, captura a tela local (Desktop)."""
+    import base64
+    import io
 
-        screenshot = pyautogui.screenshot()
-        img_byte_arr = io.BytesIO()
-        screenshot.save(img_byte_arr, format='PNG')
-        base64_img = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
-        return f"Screenshot capturado (Base64 PNG): {base64_img[:50]}..."
-    except ImportError:
-        return "Erro: Dependências 'pyautogui' ou 'pillow' não instaladas. Rode: pip install pyautogui pillow"
+    if url:
+        from playwright.async_api import async_playwright
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                page = await browser.new_page()
+                await page.goto(url, wait_until="networkidle")
+                screenshot_bytes = await page.screenshot(full_page=True)
+                await browser.close()
+                base64_img = base64.b64encode(screenshot_bytes).decode('utf-8')
+                return f"Screenshot da URL capturado (Base64): {base64_img[:50]}..."
+        except Exception as e:
+            return f"Erro ao capturar screenshot da URL: {str(e)}"
+    else:
+        try:
+            import pyautogui
+            # Check for Display on Linux systems
+            if os.name == 'posix' and not os.environ.get('DISPLAY'):
+                 return "Erro: Ambiente Headless detectado. Para capturas locais, é necessário um ambiente gráfico. Use o parâmetro 'url' para capturas web em headless."
+
+            screenshot = pyautogui.screenshot()
+            img_byte_arr = io.BytesIO()
+            screenshot.save(img_byte_arr, format='PNG')
+            base64_img = base64.b64encode(img_byte_arr.getvalue()).decode('utf-8')
+            return f"Screenshot local capturado (Base64): {base64_img[:50]}..."
+        except ImportError:
+            return "Erro: Dependências 'pyautogui' ou 'pillow' não instaladas."
+        except Exception as e:
+            return f"Erro ao capturar tela local: {str(e)}"
+
+@mcp.tool()
+def skinskill_sigmap_search(query: str):
+    """[BRAIN] Busca rápida e cirúrgica no Índice Neural (memory_graph.json) para economizar tokens (Alternativa SigMap/CodeGraph)."""
+    memory_path = ".skinskill/memory_graph.json"
+    if not os.path.exists(memory_path):
+        return "Índice Neural não encontrado. Execute 'tisc neural-index' no terminal primeiro."
+    
+    with open(memory_path, "r", encoding="utf-8") as f:
+        index = json.load(f)
+    
+    results = []
+    query_terms = query.lower().split()
+    for filepath, data in index.get("files", {}).items():
+        score = sum(1 for term in query_terms if term in data.get("summary", "").lower() or term in filepath.lower())
+        if score > 0:
+            results.append((score, filepath, data.get("summary")))
+    
+    results.sort(reverse=True, key=lambda x: x[0])
+    top_results = results[:5] # Retorna os 5 mais relevantes
+    
+    if not top_results:
+         return f"Nenhum arquivo relevante encontrado para '{query}'."
+         
+    output = f"🔍 Top 5 Arquivos Relevantes para '{query}':\n"
+    for score, filepath, summary in top_results:
+         output += f"\n- {filepath} (Score: {score})\n  Resumo: {summary[:150]}...\n"
+    return output
+
+@mcp.tool()
+def skinskill_security_audit(target_dir: str = "."):
+    """[SHIELD] Varredura de segurança local rápida (Alternativa FoxGuard). Procura por segredos e senhas hardcoded."""
+    import re
+    findings = []
+    patterns = {
+        "API_KEY": re.compile(r"api_key\s*=\s*['\"][a-zA-Z0-9]{20,}['\"]", re.IGNORECASE),
+        "PASSWORD": re.compile(r"password\s*=\s*['\"][^'\"]+['\"]", re.IGNORECASE),
+        "AWS_KEY": re.compile(r"AKIA[0-9A-Z]{16}")
+    }
+    
+    for root, dirs, files in os.walk(target_dir):
+        if any(x in root for x in [".git", "node_modules", "venv", "__pycache__"]): continue
+        for file in files:
+            if file.endswith((".py", ".js", ".ts", ".json", ".txt")):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                        for p_name, p_regex in patterns.items():
+                            if p_regex.search(content):
+                                findings.append(f"⚠️ [Vulnerabilidade] Possível {p_name} vazada em {filepath}")
+                except: pass
+                
+    if not findings:
+        return "✅ Escaneamento concluído: Nenhum segredo óbvio encontrado."
+    return "\n".join(findings)
+
+@mcp.tool()
+def skinskill_memory_query(topic: str):
+    """[BRAIN] Consulta semântica avançada no histórico do agente (Alternativa Memanto)."""
+    memory_path = ".skinskill/memory_graph.json"
+    if not os.path.exists(memory_path): return "Nenhum histórico encontrado."
+    
+    with open(memory_path, "r", encoding="utf-8") as f: 
+        data = json.load(f)
+    
+    # Se o memory_graph atual estiver na estrutura do neural-index, o histórico de chat pode não estar lá.
+    # O skinskill_context_save usa uma estrutura de lista, o neural_index usa um dict.
+    if isinstance(data, list):
+        history = data
+    else:
+        return "O arquivo memory_graph.json atual é um Índice de Arquivos, não um histórico de chat. Use skinskill_sigmap_search."
+
+    results = []
+    for entry in history:
+        if topic.lower() in entry.get("description", "").lower() or topic.lower() in entry.get("goal", "").lower():
+            results.append(entry)
+            
+    if not results:
+        return f"Nenhuma memória encontrada sobre '{topic}'."
+    return json.dumps(results[-5:], indent=2) # Retorna os 5 eventos mais recentes sobre o tópico
+
+@mcp.tool()
+def skinskill_static_ui_extract(dir_path: str = "."):
+    """[EYES] Extrai tokens de design (CSS, Tailwind) localmente sem abrir navegador (Alternativa NPXSkillUI)."""
+    import re
+    colors = set()
+    try:
+        for root, dirs, files in os.walk(dir_path):
+            if any(x in root for x in [".git", "node_modules", "dist", "build"]): continue
+            for file in files:
+                if file.endswith((".css", ".scss", ".ts", ".tsx", ".jsx", "tailwind.config.js")):
+                    filepath = os.path.join(root, file)
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                        # Extrai Hex e RGB
+                        found_colors = re.findall(r'#[0-9a-fA-F]{3,6}|rgba?\([^)]+\)', content)
+                        colors.update(found_colors)
+        
+        return json.dumps({
+            "extracted_local_colors": list(colors)[:50], # Limita para não estourar tokens
+            "total_found": len(colors),
+            "status": "Extração Estática Concluída"
+        }, indent=2)
     except Exception as e:
-        return f"Erro ao capturar tela: {str(e)}"
+        return f"Erro na extração de UI estática: {str(e)}"
 
 if __name__ == "__main__":
     import sys

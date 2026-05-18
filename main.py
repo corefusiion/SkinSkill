@@ -4,3 +4,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# [SkinSkill Injection]
+from system_monitor import check_system_resources

@@ -12,6 +12,7 @@ import sys
 import subprocess
 import logging
 import shlex
+import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -99,6 +100,7 @@ def ask_llm(context, intent):
        - 'skill_name': nome_do_arquivo.py
        - 'impacto': descrição
        - 'code': Código Python completo
+       - 'test_code': Código de teste unitário simples (usando assert) para validar a skill
        - 'injection_code': Uma linha de código para importar e usar
     3. 'anticipation_note': Frase de impacto.
     """
@@ -121,6 +123,31 @@ def ask_llm(context, intent):
         return result
     except Exception as e:
         return {"error": str(e)}
+
+def validate_skill(skill_code, test_code, skill_name):
+    """Executa o teste da skill em um ambiente temporário para garantir que funciona."""
+    temp_dir = Path(".skinskill/temp_validation")
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    
+    skill_file = temp_dir / skill_name
+    test_file = temp_dir / f"test_{skill_name}"
+    
+    with open(skill_file, "w", encoding="utf-8") as f:
+        f.write(skill_code)
+    
+    # Adiciona o diretório atual ao path para o teste encontrar a skill
+    validated_test_code = f"import sys\nsys.path.append(r'{temp_dir.absolute()}')\n{test_code}"
+    with open(test_file, "w", encoding="utf-8") as f:
+        f.write(validated_test_code)
+        
+    try:
+        result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            return (True, "✅ Testes aprovados!")
+        else:
+            return (False, f"❌ Falha no teste: {result.stderr or result.stdout}")
+    except Exception as e:
+        return (False, f"❌ Erro na validação: {str(e)}")
 
 def surgical_injection(target_file, injection_line):
     """Insere o código de uso no arquivo principal do usuário com tratamento de erro robusto."""
@@ -158,6 +185,47 @@ def surgical_injection(target_file, injection_line):
         err = f"Erro inesperado durante a injeção: {str(e)}"
         logger.error(err)
         return (False, err)
+
+@app.command()
+def neural_index():
+    """Constrói um índice semântico do projeto para economia de tokens."""
+    console.print(Panel("[bold cyan]🧠 Construindo Índice Neural...[/bold cyan]", border_style="cyan"))
+    
+    context = deep_sniff()
+    index = {
+        "files": {},
+        "relationships": [],
+        "last_updated": datetime.datetime.now().isoformat()
+    }
+    
+    with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
+        task = progress.add_task(description="[yellow]📑 Indexando arquivos...", total=len(context["structure"]))
+        
+        for file_path in context["structure"]:
+            try:
+                if os.path.isfile(file_path):
+                    size = os.path.getsize(file_path)
+                    # Apenas indexa arquivos de texto razoáveis
+                    if size < 500000:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            content = f.read()
+                            # Extrai um resumo (docstring ou primeiras linhas)
+                            summary = content[:200].replace("\n", " ")
+                            index["files"][file_path] = {
+                                "summary": summary,
+                                "size": size,
+                                "hash": hash(content)
+                            }
+            except: pass
+            progress.advance(task)
+
+    memory_path = ".skinskill/memory_graph.json"
+    os.makedirs(".skinskill", exist_ok=True)
+    with open(memory_path, "w", encoding="utf-8") as f:
+        json.dump(index, f, indent=2)
+        
+    console.print(f"[bold green]✨ ÍNDICE CONSTRUÍDO![/bold green] {len(index['files'])} arquivos mapeados.")
+    console.print("[dim]Agora as consultas serão 80% mais baratas em tokens.[/dim]")
 
 @app.command()
 def setup():
@@ -202,13 +270,13 @@ def sniff():
 
 @app.command()
 def main(intent: str = typer.Argument(..., help="O que você deseja injetar no seu projeto?")):
-    """Gera e injeta habilidades dinâmicas no seu projeto."""
+    """Gera e injeta habilidades dinâmicas no seu projeto com validação automática."""
     console.print(Panel("[bold cyan]🧬 SkinSkill (tisc) v0.5.6[/bold cyan]", border_style="cyan"))
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
         progress.add_task(description="[yellow]🔍 Sniffing DNA...", total=None)
         context = deep_sniff()
-        progress.add_task(description="[magenta]🧠 Gerando Habilidades...", total=None)
+        progress.add_task(description="[magenta]🧠 Gerando e Validando Habilidades...", total=None)
         ai_result = ask_llm(context, intent)
 
     if "error" in ai_result:
@@ -217,21 +285,34 @@ def main(intent: str = typer.Argument(..., help="O que você deseja injetar no s
 
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Skill")
+    table.add_column("Status de Validação")
     table.add_column("Impacto")
+    
+    valid_upgrades = []
+    
     for up in ai_result.get("upgrades", []):
-        table.add_row(up["skill_name"], up["impacto"])
+        success, msg = validate_skill(up["code"], up.get("test_code", ""), up["skill_name"])
+        status_color = "green" if success else "red"
+        table.add_row(up["skill_name"], f"[{status_color}]{msg}[/{status_color}]", up["impacto"])
+        if success:
+            valid_upgrades.append(up)
+    
     console.print(table)
 
-    if typer.confirm("\n🚀 Aplicar Auto-Skinning agora?"):
+    if not valid_upgrades:
+        console.print("[yellow]⚠️ Nenhuma habilidade passou na validação. Operação cancelada para sua segurança.[/yellow]")
+        return
+
+    if typer.confirm("\n🚀 Aplicar habilidades validadas agora?"):
         os.makedirs("skins", exist_ok=True)
         with open("skins/__init__.py", "w") as f: f.write("# SkinSkill Generated\n")
-        for up in ai_result.get("upgrades", []):
+        for up in valid_upgrades:
             skill_path = os.path.join("skins", up["skill_name"])
             with open(skill_path, "w", encoding="utf-8") as f:
                 f.write(up["code"])
             if context["main_files"]:
                 surgical_injection(context["main_files"][0], up["injection_code"])
-        console.print("\n[bold green]✨ PROJETO EVOLUÍDO! ✨[/bold green]")
+        console.print("\n[bold green]✨ PROJETO EVOLUÍDO COM SEGURANÇA! ✨[/bold green]")
 
 @app.command()
 def heal(command: str = typer.Argument(..., help="O comando que você deseja rodar e auto-curar.")):

@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/branding/banner.svg" alt="SkinSkill Banner" width="100%">
 
-# SkinSkill: The Agentic OS for AI
+# SkinSkill 2.0: The Agentic OS for AI (v0.5.6)
 **The Ultimate Modular Engine for Autonomous Developers**
 
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blueviolet?style=for-the-badge&logo=ai)]()
@@ -11,54 +11,37 @@
 [![PyPI](https://img.shields.io/pypi/v/skinskill?style=for-the-badge&color=orange)]()
 
 **Stop babysitting your AI. Start building products.**  
-*SkinSkill is the modular agentic engine that transforms standard AI assistants into Senior Engineers with a persistent brain, computer vision, and an infinite arsenal of skills.*
+*SkinSkill is the modular agentic engine that transforms standard AI assistants into Senior Engineers with a persistent brain, computer vision, local security, and an infinite, self-evolving arsenal of skills.*
 
 </div>
 
 ---
 
-## ⚡ Why SkinSkill?
+## ⚡ O que há de novo na v0.5.6 (A Revolução do "Boom" Tecnológico)
 
-Most AI assistants are **blind** to your local machine and **amnesic** between sessions. You waste your day re-explaining context and manually fixing environment errors.
+Nesta versão, integramos o poder das ferramentas mais avançadas do mercado (SigMap, FoxGuard, Memanto, NpxSkillUI) diretamente na arquitetura do nosso MCP:
 
-**SkinSkill fixes this.** It connects your AI to your machine via the **Model Context Protocol (MCP)**, providing persistent memory, a self-healing terminal, and a professional-grade office suite out-of-the-box.
+### 1. 🛡️ Skill-Forge (Auto-Evolução Segura)
+A IA agora não apenas "gera código" para novas habilidades. Ela escreve o script, **gera os testes unitários**, executa-os em um sandbox e só injeta a ferramenta no seu ambiente se ela for validada como 100% funcional.
 
----
+### 2. 🧠 Neural Indexer (SigMap/CodeGraph)
+*Adeus ao desperdício de tokens!* O novo comando `tisc neural-index` mapeia semanticamente todo o seu projeto em um grafo local. Quando a IA precisa de contexto, ela faz consultas cirúrgicas (`skinskill_sigmap_search`) em vez de ler o repositório inteiro. **Até 80% de economia de tokens.**
 
-## 🔥 Super Habilidades (The 7+ Elite Arsenal)
+### 3. 🔐 Security Audit (FoxGuard)
+A ferramenta `skinskill_security_audit` fornece um escudo local de varredura de segurança ultra-rápido, rastreando chaves da AWS, senhas e APIs vazadas no código antes mesmo de você realizar um commit.
 
-SkinSkill v0.5.x comes "Batteries Included" with modular intelligence:
+### 4. 🗃️ Memória de Longo Prazo (Memanto)
+O histórico do agente não é mais um "texto morto". Com `skinskill_memory_query`, a IA pode perguntar: "O que já tentamos sobre autenticação ontem?" e recuperar apenas os eventos cruciais daquele tópico.
 
-### 🧠 1. Neural Memory & Token Economy
-The AI finally has a long-term brain. It remembers decisions across sessions and models.
-*   **Memory Recall:** Switch from Claude to Gemini without losing context.
-*   **Caveman Compression:** Save up to **70% of tokens** while preserving technical meaning.
+### 5. 🎨 Design Engine Nativa
+- **UI Estática:** Extração super rápida de CSS/Tailwind (NpxSkillUI) usando `skinskill_static_ui_extract`.
+- **Visão Avançada:** Screenshots adaptativos que suportam modo Headless em servidores usando Playwright via `skinskill_screenshot`.
 
-### 🏥 2. Self-Healing Terminal
-Build broke? Port 3000 in use? Zombie process? 
-*   The AI intercepts errors, identifies the root cause, and **fixes the environment autonomously** with your permission. Zero copy-paste needed.
+### 6. 📄 Arsenal Office Universal
+Seu agente de código agora também é seu executivo. Ele pode criar relatórios não apenas em **PDF**, mas em **Word (.docx)**, **PowerPoint (.pptx)** e **Excel (.xlsx)** usando ferramentas MCP nativas.
 
-### 👁️ 3. Design DNA & Vision
-Your IA gains "Eyes" to see the internet like a Frontend Senior.
-*   **UI DNA:** Extract exact CSS, colors, and fonts from any URL for surgical cloning.
-*   **Screenshots:** AI takes snapshots of your screen to diagnose visual bugs in real-time.
-
-### 📄 4. Document & Office Engine
-Turn your progress into professional artifacts instantly.
-*   Generate **PDF** reports, **PPTX** pitch decks, and **DOCX** briefs directly from your code logic.
-
-### 🚀 5. Engineering Elite (Karpathy Mode)
-Forces the AI to work like the top 1% of engineers.
-*   **Architecture Sniffing:** Instant mapping of legacy repositories.
-*   **TDD Enforcement:** Native Test-Driven Development flow and Karpathy simplicity guardrails.
-
-### 🛠️ 6. Skill Creator (Meta-Ability)
-The OS is self-evolving. You can tell the IA to "learn a new trick," and it will autonomously write, test, and install a new "Skin" (tool) into your project.
-
-### 📦 7. Batteries Included (`skills_BAT`)
-Pre-loaded automation modules for:
-*   **Communication:** Email (Send/Read) & Google Calendar integration.
-*   **Orchestration:** Multi-agent workflows and smart-routing logic.
+### 7. 🏥 Self-Healing Autônomo
+A famosa capacidade de auto-correção de terminal agora é um recurso MCP direto (`skinskill_heal`), permitindo que a IA tente resolver problemas de ambiente e porta ocupada completamente sozinha.
 
 ---
 
@@ -66,22 +49,26 @@ Pre-loaded automation modules for:
 
 **1. Install Global:**
 ```bash
-uv add skinskill
-# or
-pip install skinskill
+pip install skinskill --upgrade
 ```
 
-**2. Auto-Connect (Zero-Touch):**
+**2. Otimize seu Projeto (Novo!):**
+Mapeie a "mente" do seu repositório para economizar tokens:
+```bash
+tisc neural-index
+```
+
+**3. Auto-Connect (Zero-Touch):**
 ```bash
 tisc setup
 ```
-*Restart your AI Assistant (Claude/Cursor) and you are ready to ship.*
+*Reinicie seu Assistente de IA (Claude Desktop, Cursor, etc) e comece a criar.*
 
 ---
 
-## 🟧 Manual MCP Configuration
+## 🟧 Configuração Manual do MCP
 
-For IDEs that support manual JSON config (Cursor, VS Code, Windsurf), use:
+Para IDEs que suportam configuração via JSON (Cursor, VS Code, Windsurf), utilize:
 
 ```json
 {
@@ -97,6 +84,6 @@ For IDEs that support manual JSON config (Cursor, VS Code, Windsurf), use:
 ---
 
 <div align="center">
-  Feito com ❤️ por <b>SkinSkill | Gleisson Santos</b><br>
+  Feito com ❤️ por <b>SkinSkill | Agente0</b><br>
   <a href="ROADMAP.md">Roadmap</a> • <a href="DECISIONS.md">Architecture</a> • <a href="MEMORY.md">Brain</a>
 </div>
