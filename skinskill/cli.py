@@ -207,34 +207,67 @@ def neural_index():
     console.print(f"[bold green]✨ ÍNDICE CONSTRUÍDO![/bold green] {len(index['files'])} arquivos mapeados.")
 
 @app.command()
-def setup():
-    """Configura automaticamente o SkinSkill (Zero-Touch)."""
-    console.print(Panel("[bold cyan]🧬 SkinSkill: Zero-Touch Setup[/bold cyan]", border_style="cyan"))
+def setup(scope: str = typer.Option("global", "--scope", "-s", help="Escopo do setup: 'global' (usuário) ou 'local' (projeto).")):
+    """Configura o SkinSkill nos assistentes de IA (Claude, Gemini CLI, etc)."""
+    console.print(Panel(f"[bold cyan]🧬 SkinSkill Universal Setup (Scope: {scope})[/bold cyan]", border_style="cyan"))
     
-    appdata = os.getenv("APPDATA")
-    if not appdata: return
-    claude_config_path = Path(appdata) / "Claude" / "claude_desktop_config.json"
-    
-    if not claude_config_path.parent.exists(): return
-
-    config = {}
-    if claude_config_path.exists():
-        with open(claude_config_path, "r", encoding="utf-8") as f:
-            try: config = json.load(f)
-            except: config = {}
-
-    if "mcpServers" not in config: config["mcpServers"] = {}
-    
-    # Usa sys.executable para o caminho ABSOLUTO do Python
-    config["mcpServers"]["skinskill"] = {
-        "command": sys.executable,
+    python_exe = sys.executable
+    mcp_config = {
+        "command": python_exe,
         "args": ["-m", "skinskill.mcp_server"]
     }
 
-    with open(claude_config_path, "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=2)
+    # 1. Claude Desktop Setup
+    appdata = os.getenv("APPDATA")
+    if appdata:
+        claude_path = Path(appdata) / "Claude" / "claude_desktop_config.json"
+        if claude_path.parent.exists():
+            try:
+                config = {}
+                if claude_path.exists():
+                    with open(claude_path, "r", encoding="utf-8") as f:
+                        config = json.load(f)
+                
+                if "mcpServers" not in config: config["mcpServers"] = {}
+                config["mcpServers"]["skinskill"] = mcp_config
+                
+                with open(claude_path, "w", encoding="utf-8") as f:
+                    json.dump(config, f, indent=2)
+                console.print("[green]✅ Configurado no Claude Desktop.[/green]")
+            except Exception as e:
+                console.print(f"[red]❌ Erro ao configurar Claude: {e}[/red]")
 
-    console.print(f"[bold green]✨ SUCESSO![/bold green] Configurado via {sys.executable}")
+    # 2. Gemini CLI Setup
+    home = Path.home()
+    gemini_path = home / ".gemini" / "settings.json"
+    if gemini_path.parent.exists() or scope == "global":
+        try:
+            gemini_path.parent.mkdir(parents=True, exist_ok=True)
+            config = {}
+            if gemini_path.exists():
+                with open(gemini_path, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            
+            if "mcpServers" not in config: config["mcpServers"] = {}
+            config["mcpServers"]["skinskill"] = mcp_config
+            
+            with open(gemini_path, "w", encoding="utf-8") as f:
+                json.dump(config, f, indent=2)
+            console.print("[green]✅ Configurado no Gemini CLI.[/green]")
+        except Exception as e:
+            console.print(f"[red]❌ Erro ao configurar Gemini CLI: {e}[/red]")
+
+    # 3. Local Project Config (Cursor/Windsurf)
+    if scope == "local":
+        try:
+            vscode_path = Path(".vscode")
+            vscode_path.mkdir(exist_ok=True)
+            # Apenas gera um snippet para o usuário copiar
+            console.print("\n[yellow]💡 Para Cursor/Windsurf, adicione este MCP manualmente:[/yellow]")
+            console.print(Syntax(json.dumps({"skinskill": mcp_config}, indent=2), "json"))
+        except: pass
+
+    console.print(f"\n[bold green]✨ PRONTO![/bold green] SkinSkill agora usa: [dim]{python_exe}[/dim]")
 
 @app.command()
 def sniff():
