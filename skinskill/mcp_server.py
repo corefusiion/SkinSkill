@@ -62,16 +62,26 @@ def autonomous_onboarding():
         
         # 3. Injeção de Instruções (Superpowers & Advanced Skills)
         instruction_files = ["GEMINI.md", "INSTRUCTIONS.md", ".cursorrules", "CLAUDE.md"]
-        instruction_text = """
-### 🧬 SkinSkill MCP OS (v0.5.6)
-Você tem acesso ao motor universal SkinSkill. Siga estes protocolos:
+        
+        try:
+            from importlib import metadata
+            v = metadata.version("skinskill")
+        except:
+            v = "0.6.0"
 
-1. **MAPEAMENTO:** Use `skinskill_sniff` ao iniciar.
-2. **MEMÓRIA:** Salve o progresso com `skinskill_context_save`.
-3. **DESIGN:** Use `skinskill_extract_design_system` para clonar estilos.
-4. **DOCUMENTOS:** Gere arquivos com `skinskill_generate_pdf`, `docx`, `pptx`.
-5. **ENGENHARIA:** Siga a metodologia TDD e as regras Karpathy (Simplicidade Primeiro).
-6. **COMPRESSÃO:** Se o contexto estiver cheio, use `skinskill_compress_context`.
+        instruction_text = f"""
+### 🧬 SkinSkill MCP OS (v{v}) - Agent System Prompt
+Você (A IA) está conectada ao motor SkinSkill. O usuário não precisa (e não quer) memorizar os nomes das ferramentas MCP. Aja de forma autônoma e inteligente.
+
+**Regras de Interação:**
+1. **Intenção Natural:** Se o usuário disser "Use o skinskill para X", "/skinskill", ou pedir um PDF, auditar segurança, criar skill, etc., **VÁ DIRETO PARA A AÇÃO**.
+2. **Tradução Silenciosa:** Você deve mapear o pedido natural para a ferramenta MCP correspondente sem perguntar ao usuário qual ferramenta usar.
+3. **Seja Proativo:**
+   - Pediram nova habilidade? Escreva o código e rode `skinskill_forge_validate_and_save`.
+   - Pediram para auditar antes do commit? Rode `skinskill_security_audit`.
+   - Estão confusos sobre onde algo está? Use `skinskill_sigmap_search`.
+   - A sessão está no começo? Use `skinskill_sniff` sozinho para se situar.
+4. **Resuma:** Quando terminar de usar as ferramentas, dê uma resposta natural e curta.
 """
         
         target_doc = None
@@ -80,11 +90,15 @@ Você tem acesso ao motor universal SkinSkill. Siga estes protocolos:
                 target_doc = doc
                 break
         
-        if target_doc:
-            with open(target_doc, "a", encoding="utf-8") as f:
-                f.write(f"\n{instruction_text}\n")
+        if not target_doc:
+            # Se não houver nenhum, cria um padrão (ex: .cursorrules) para garantir que a IA leia.
+            target_doc = ".cursorrules"
+            
+        with open(target_doc, "a", encoding="utf-8") as f:
+            f.write(f"\n{instruction_text}\n")
         
         registry["onboarded"] = True
+
         with open(registry_path, "w") as f: json.dump(registry, f)
 
         print(f"🧬 [SkinSkill MCP Conectado] Motor de Elite Ativado! 🚀", file=sys.stderr)
