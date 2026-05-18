@@ -13,13 +13,21 @@ import subprocess
 import logging
 import shlex
 import datetime
+import re
 from pathlib import Path
 from dotenv import load_dotenv
+from importlib import metadata
 
 # Carrega chaves de API do .env
 load_dotenv()
 
-app = typer.Typer(help="🧬 SkinSkill: The Agentic OS for AI")
+# Obtém versão dinâmica do pacote
+try:
+    __version__ = metadata.version("skinskill")
+except:
+    __version__ = "0.6.0"
+
+app = typer.Typer(help=f"🧬 SkinSkill v{__version__}: The Agentic OS for AI")
 console = Console()
 
 # Configuração de Log para depuração robusta
@@ -71,7 +79,7 @@ def deep_sniff():
     return context
 
 def validate_skill(skill_code, test_code, skill_name):
-    """Executa o teste da skill em um ambiente temporário para garantir que funciona."""
+    """Executa o teste da skill em um ambiente temporário isolado para garantir que funciona."""
     temp_dir = Path(".skinskill/temp_validation")
     temp_dir.mkdir(parents=True, exist_ok=True)
     
@@ -81,15 +89,15 @@ def validate_skill(skill_code, test_code, skill_name):
     with open(skill_file, "w", encoding="utf-8") as f:
         f.write(skill_code)
     
-    # Adiciona o diretório atual ao path para o teste encontrar a skill
-    validated_test_code = f"import sys\nimport os\nsys.path.append(r'{temp_dir.absolute()}')\n{test_code}"
+    # Permite que o teste importe a skill diretamente do diretório atual
+    validated_test_code = f"import sys\nimport os\n# Adiciona diretório da skill ao path\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n{test_code}"
     with open(test_file, "w", encoding="utf-8") as f:
         f.write(validated_test_code)
         
     try:
-        # Executa com PYTHONPATH configurado
+        # Executa com PYTHONPATH configurado para o diretório temporário
         env = os.environ.copy()
-        env["PYTHONPATH"] = str(temp_dir.absolute())
+        env["PYTHONPATH"] = str(temp_dir.absolute()) + os.pathsep + env.get("PYTHONPATH", "")
         result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, timeout=15, env=env)
         if result.returncode == 0:
             return (True, "✅ Testes aprovados!")
@@ -99,41 +107,52 @@ def validate_skill(skill_code, test_code, skill_name):
         return (False, f"❌ Erro na validação: {str(e)}")
 
 def surgical_injection(target_file, injection_line):
-    """Insere o código de uso no arquivo principal do usuário com tratamento de erro robusto."""
+    """Injeta código cirurgicamente, evitando duplicatas e organizando imports."""
     if not os.path.exists(target_file):
-        logger.error(f"Arquivo alvo não encontrado: {target_file}")
         return (False, f"Arquivo {target_file} não encontrado.")
     
     try:
         with open(target_file, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            content = f.read()
         
-        try:
-            skill_module = injection_line.split(' ')[1].split('.')[1]
-            import_line = f"from skins.{skill_module} import *\n"
-        except IndexError:
-            logger.warning(f"Não foi possível parsear a linha de injeção: {injection_line}")
+        # 1. Tenta extrair o nome do módulo de forma robusta via Regex
+        # Suporta: 'from skins.x import *', 'import skins.x', etc.
+        match = re.search(r'(?:from|import)\s+skins\.([a-zA-Z0-9_]+)', injection_line)
+        module_name = match.group(1) if match else None
+        
+        # 2. Verifica se já existe um import para este módulo
+        if module_name and f"skins.{module_name}" in content:
+            logger.info(f"Import de {module_name} já existe em {target_file}. Pulando injeção de cabeçalho.")
             import_line = ""
+        else:
+            import_line = f"from skins.{module_name} import *\n" if module_name else ""
 
-        if import_line and import_line not in lines:
-            lines.insert(0, import_line)
+        # 3. Organização com Âncora
+        anchor = "# [SkinSkill Imports]"
+        lines = content.splitlines()
         
-        call_part = injection_line.split(';')[1].strip() if ';' in injection_line else injection_line
-        lines.append(f"\n# [SkinSkill Injection]\n{call_part}\n")
+        if anchor not in content and import_line:
+            lines.insert(0, anchor)
+            lines.insert(1, import_line)
+        elif import_line:
+            # Insere logo após a âncora existente
+            for i, line in enumerate(lines):
+                if anchor in line:
+                    lines.insert(i + 1, import_line)
+                    break
+        
+        # 4. Injeta a chamada se fornecida (se houver um ';' na linha)
+        if ';' in injection_line:
+            call_part = injection_line.split(';')[1].strip()
+            if call_part not in content:
+                lines.append(f"\n# [SkinSkill Action]\n{call_part}\n")
         
         with open(target_file, "w", encoding="utf-8") as f:
-            f.writelines(lines)
+            f.write("\n".join(lines) + "\n")
         
-        logger.info(f"Injeção bem-sucedida em {target_file}")
         return (True, "Sucesso")
-    except PermissionError:
-        err = f"Erro de permissão ao acessar {target_file}"
-        logger.error(err)
-        return (False, err)
     except Exception as e:
-        err = f"Erro inesperado durante a injeção: {str(e)}"
-        logger.error(err)
-        return (False, err)
+        return (False, f"Erro na injeção: {str(e)}")
 
 @app.command()
 def neural_index():

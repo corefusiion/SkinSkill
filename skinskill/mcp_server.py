@@ -129,9 +129,34 @@ def skinskill_inject(code: str, target_file: str, injection_point: str = "end"):
     else:
         return f"❌ Erro na injeção: {msg}"
 
+def ensure_visual_engines():
+    """Garante que o Playwright está instalado apenas quando necessário (Lazy Loading)."""
+    import sys
+    try:
+        registry_path = ".skinskill/registry.json"
+        os.makedirs(".skinskill", exist_ok=True)
+        
+        reg = {"browsers_installed": False}
+        if os.path.exists(registry_path):
+            try:
+                with open(registry_path, "r") as f: reg = json.load(f)
+            except: pass
+
+        if not reg.get("browsers_installed"):
+            print("🧬 SkinSkill: Instalando motores visuais (Playwright) sob demanda... Aguarde.", file=sys.stderr)
+            subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], capture_output=True)
+            reg["browsers_installed"] = True
+            with open(registry_path, "w") as f: json.dump(reg, f)
+            return True
+        return True
+    except Exception as e:
+        print(f"⚠️ Aviso: Falha ao carregar infra visual: {e}", file=sys.stderr)
+        return False
+
 @mcp.tool()
 async def skinskill_extract_design_system(url: str, mode: str = "all"):
     """[EYES] Extrai o Design System de uma URL. Modos: 'all', 'colors', 'fonts', 'structure'."""
+    ensure_visual_engines()
     from playwright.async_api import async_playwright
     try:
         async with async_playwright() as p:
@@ -268,6 +293,7 @@ async def skinskill_screenshot(url: str = None):
     import io
 
     if url:
+        ensure_visual_engines()
         from playwright.async_api import async_playwright
         try:
             async with async_playwright() as p:
@@ -405,8 +431,14 @@ def skinskill_static_ui_extract(dir_path: str = "."):
 
 if __name__ == "__main__":
     import sys
+    from importlib import metadata
+    try:
+        __version__ = metadata.version("skinskill")
+    except:
+        __version__ = "0.6.0"
+        
     if len(sys.argv) == 1:
-        print("\n🧬 [SkinSkill MCP Server v0.5.6]")
+        print(f"\n🧬 [SkinSkill MCP Server v{__version__}]")
         print("Motor de Elite Ativado. Conectado ao ecossistema de habilidades externas.")
         print("Para testar este servidor, use: mcp dev skinskill/mcp_server.py")
     mcp.run()
