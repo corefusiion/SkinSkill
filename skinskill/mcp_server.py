@@ -432,5 +432,62 @@ def skinskill_static_ui_extract(dir_path: str = "."):
                 except: pass
     return json.dumps({"colors": list(colors)[:50]}, indent=2)
 
+@mcp.tool()
+def skinskill_watchdog(log_path: str, tail_lines: int = 50):
+    """[WATCHDOG] Lê as últimas linhas de um arquivo de log para monitoramento autônomo de falhas em background."""
+    if not os.path.exists(log_path): return f"Arquivo de log {log_path} não encontrado."
+    try:
+        with open(log_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        return "".join(lines[-tail_lines:])
+    except Exception as e:
+        return f"Erro ao ler log: {e}"
+
+@mcp.tool()
+async def skinskill_vision_audit(target_url: str, reference_url: str):
+    """[EYES] Captura screenshots de duas URLs para auditoria visual e comparação (Visual TDD). Retorna Base64."""
+    ensure_visual_engines()
+    from playwright.async_api import async_playwright
+    import base64
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            await page.goto(target_url, wait_until="networkidle")
+            target_bytes = await page.screenshot(full_page=True)
+            
+            await page.goto(reference_url, wait_until="networkidle")
+            ref_bytes = await page.screenshot(full_page=True)
+            
+            await browser.close()
+            return json.dumps({
+                "target_base64": base64.b64encode(target_bytes).decode('utf-8'),
+                "reference_base64": base64.b64encode(ref_bytes).decode('utf-8'),
+                "status": "Screenshots capturados com sucesso. Analise visualmente as diferenças."
+            })
+    except Exception as e:
+        return f"Erro na auditoria visual: {str(e)}"
+
+@mcp.tool()
+def skinskill_a2a_sync(agent_name: str, message: str):
+    """[A2A] Sincronização Inter-Agente. Envia uma mensagem para o Blackboard global compartilhado."""
+    inbox_path = ".skinskill/a2a_inbox.json"
+    os.makedirs(".skinskill", exist_ok=True)
+    inbox = []
+    if os.path.exists(inbox_path):
+        try:
+            with open(inbox_path, "r", encoding="utf-8") as f: inbox = json.load(f)
+        except: pass
+    
+    inbox.append({
+        "timestamp": datetime.datetime.now().isoformat(),
+        "from_agent": agent_name,
+        "message": message
+    })
+    
+    with open(inbox_path, "w", encoding="utf-8") as f: json.dump(inbox[-50:], f, indent=2)
+    return f"Sincronização A2A concluída. Mensagem de {agent_name} registrada no Blackboard."
+
 if __name__ == "__main__":
     mcp.run()

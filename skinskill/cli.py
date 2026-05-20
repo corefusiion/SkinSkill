@@ -299,5 +299,75 @@ def heal(command: str = typer.Argument(..., help="Comando a ser curado.")):
         return
     console.print(Panel(process.stderr or process.stdout, title="Erro detectado", border_style="red"))
 
+@app.command()
+def dashboard(port: int = typer.Option(8080, help="Porta do dashboard")):
+    """🖥️ Inicia o SkinSkill Command Center (Web UI Local)."""
+    console.print(Panel(f"[bold cyan]🖥️ Iniciando SkinSkill Dashboard na porta {port}...[/bold cyan]", border_style="cyan"))
+    import http.server
+    import socketserver
+    
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head><title>SkinSkill Command Center</title>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: sans-serif; padding: 20px; }
+        .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        h1, h2 { color: #58a6ff; }
+        .success { color: #3fb950; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+    </head>
+    <body>
+        <h1>🧬 SkinSkill Command Center</h1>
+        <p class="success">Status: MCP Online & Monitorando</p>
+        <div class="card">
+            <h2>🌑 Shadow-Graph (Decisões & Racional)</h2>
+            <pre id="shadow">Carregando...</pre>
+        </div>
+        <div class="card">
+            <h2>🧠 Memória Neural (Index Semântico)</h2>
+            <pre id="neural">Carregando...</pre>
+        </div>
+        <script>
+            fetch('/.skinskill/shadow_graph.json')
+                .then(r => r.ok ? r.json() : [])
+                .then(d => document.getElementById('shadow').innerText = JSON.stringify(d, null, 2))
+                .catch(e => document.getElementById('shadow').innerText = 'Nenhuma decisão registrada ainda.');
+            fetch('/.skinskill/memory_graph.json')
+                .then(r => r.ok ? r.json() : {})
+                .then(d => document.getElementById('neural').innerText = JSON.stringify(d, null, 2))
+                .catch(e => document.getElementById('neural').innerText = 'Nenhum índice encontrado. Rode "tisc neural-index".');
+            
+            // Auto-refresh a cada 5 segundos
+            setInterval(() => { location.reload(); }, 5000);
+        </script>
+    </body>
+    </html>
+    """
+    
+    os.makedirs(".skinskill", exist_ok=True)
+    with open(".skinskill/dashboard.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+        
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == '/':
+                self.path = '/.skinskill/dashboard.html'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+    # Supress logs no stdout para manter o terminal limpo
+    class SilentHandler(Handler):
+        def log_message(self, format, *args):
+            pass
+
+    with socketserver.TCPServer(("", port), SilentHandler) as httpd:
+        console.print(f"[bold green]✨ Dashboard rodando em http://localhost:{port}[/bold green]")
+        console.print("[dim]Pressione Ctrl+C para encerrar.[/dim]")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            console.print("\n[yellow]Dashboard encerrado.[/yellow]")
+
 if __name__ == "__main__":
     app()

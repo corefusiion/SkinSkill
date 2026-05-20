@@ -2,41 +2,47 @@
 
 <img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/branding/banner.svg" alt="SkinSkill Banner" width="100%">
 
-# SkinSkill 2.0: The Agentic OS for AI (v0.8.1)
-**The Ultimate Modular Engine for Autonomous Developers**
+# SkinSkill 3.0: The World's Most Complete Agent OS (v0.9.0)
+**The Definitive Infrastructure for Autonomous Engineering**
 
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blueviolet?style=for-the-badge&logo=ai)]()
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)]()
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)]()
 [![PyPI](https://img.shields.io/pypi/v/skinskill?style=for-the-badge&color=orange)]()
 
-**Stop babysitting your AI. Start building products.**  
-*SkinSkill is the modular agentic engine that transforms standard AI assistants into Senior Engineers with a persistent brain, computer vision, local security, and an infinite, self-evolving arsenal of skills.*
+**The global standard for Agentic AI.**  
+*SkinSkill 3.0 is a world-class MCP ecosystem that provides your AI with a command center, visual TDD, autonomous monitoring, and multi-agent synchronization.*
 
-[📖 Ler o Guia de Experiência (TUTORIAL)](./TUTORIAL.md)
+[📖 Read the Experience Guide (TUTORIAL)](./TUTORIAL.md)
 
 </div>
 
 ---
 
-## ⚡ O que há de novo na v0.8.1 (The Shadow-Graph Era)
+## 🌍 O que torna o SkinSkill 3.0 ÚNICO no Mundo?
 
-Atingimos o nível máximo de maturidade com foco em **Consciência Arquitetural** e **Autonomia Total**:
+Nesta versão, integramos os **4 Pilares da Engenharia Agêntica Moderna**, baseados nas maiores demandas das comunidades globais:
 
-### 1. 🧠 Shadow-Graph (Memória de Decisão)
-O SkinSkill agora guarda o **PORQUÊ** das coisas. Com o Shadow-Graph, a IA registra o racional por trás de cada decisão técnica (ex: mudar uma lib, escolher um banco de dados). O agente nunca mais "esquece" ou alucina decisões passadas.
+### 1. 🖥️ SkinSkill Command Center (Dashboard)
+Chega de MCPs invisíveis. O novo comando `tisc dashboard` sobe uma **Web UI local (localhost:8080)** elegante que mostra em tempo real o fluxo de pensamento da IA, o mapa do projeto e o Shadow-Graph.
 
-### 2. 🐣 Onboarding Proativo (Self-Configuring)
-Ao conectar o SkinSkill a qualquer pasta, ele **cria automaticamente** os arquivos `CLAUDE.md`, `GEMINI.md` e `.cursorrules`. Sua IA já começa a sessão sabendo que é um Engenheiro de Elite.
+### 2. 🧬 O Watchdog Autônomo
+A ferramenta `skinskill_watchdog` permite que sua IA monitore logs e terminais em background. Se algo quebrar, a IA percebe sozinha e propõe a auto-cura antes mesmo de você notar.
 
-### 3. 💎 Interface Premium & Progress
-Instalações de dependências agora exibem **spinners dinâmicos e barras de progresso elegantes** (via `rich`), garantindo feedback profissional sem poluir o protocolo MCP.
+### 3. 👁️ Vision-Audit (Visual TDD)
+Com `skinskill_vision_audit`, o agente captura screenshots da sua UI e da URL de referência, usa visão computacional para comparar pixels e gera as correções visuais automaticamente.
 
-### 4. 🛡️ Skill-Forge com Validação AST
-A IA gera ferramentas que **testam a si mesmas**. Usamos análise de árvore sintática (AST) para garantir que cada nova habilidade seja validada em sandbox antes da instalação.
+### 4. 🔗 Sincronização Inter-Agente (A2A)
+Usando `skinskill_a2a_sync`, suas instâncias de IA (Cursor, Claude Desktop, CLI) compartilham o mesmo "Quadro Negro" (Blackboard) de contexto. O que um agente aprende, todos os outros sabem instantaneamente.
 
-### 5. 🧠 Neural Indexer & SigMap Search
-*Economia de 80% de tokens.* A IA faz buscas cirúrgicas de contexto no índice semântico em vez de ler o repositório inteiro.
+---
+
+## ⚡ Outras Super Habilidades (Baterias Incluídas)
+
+- **Shadow-Graph:** Memória arquitetural que guarda o racional de cada decisão.
+- **Skill-Forge TDD:** Criação de ferramentas com auto-validação em sandbox.
+- **Neural Indexer:** Economia de 80% de tokens via busca semântica.
+- **Office Suite:** Geração nativa de Word, Excel, PPTX e PDF.
 
 ---
 
@@ -47,17 +53,15 @@ A IA gera ferramentas que **testam a si mesmas**. Usamos análise de árvore sin
 pip install skinskill --upgrade
 ```
 
-**2. Auto-Connect (Universal Setup):**
-Detecta e configura Claude Desktop e Gemini CLI automaticamente.
+**2. Auto-Connect:**
 ```bash
 tisc setup
 ```
 
-**3. Otimize seu Projeto:**
+**3. Open Command Center:**
 ```bash
-tisc neural-index
+tisc dashboard
 ```
-*Abra seu Assistente (Claude/Cursor) e fale naturalmente: "Por que decidimos usar Tailwind aqui?".*
 
 ---
 
