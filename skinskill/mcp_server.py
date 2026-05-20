@@ -254,70 +254,223 @@ async def skinskill_extract_design_system(url: str, mode: str = "all"):
 
 @mcp.tool()
 def skinskill_generate_pdf(content: str, filename: str = "documento.pdf"):
-    """[FILES] Gera um documento PDF profissional (ReportLab)."""
+    """[FILES] Gera um documento PDF profissional (ReportLab Platypus)."""
     try:
         from reportlab.lib.pagesizes import letter
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.utils import simpleSplit
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 
-        c = canvas.Canvas(filename, pagesize=letter)
-        width, height = letter
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(50, height - 50, "SkinSkill Autonomous Report")
+        doc = SimpleDocTemplate(filename, pagesize=letter,
+                              rightMargin=72, leftMargin=72,
+                              topMargin=72, bottomMargin=18)
         
-        c.setFont("Helvetica", 12)
-        textobject = c.beginText(50, height - 80)
-        lines = simpleSplit(content, "Helvetica", 12, width - 100)
-        for line in lines:
-            if textobject.getY() < 50:
-                c.drawText(textobject)
-                c.showPage()
-                textobject = c.beginText(50, height - 50)
-            textobject.textLine(line)
-        c.drawText(textobject)
-        c.save()
-        return f"✅ PDF '{filename}' gerado com sucesso via ReportLab."
+        styles = getSampleStyleSheet()
+        
+        # Estilo de Título Premium
+        title_style = ParagraphStyle(
+            'PremiumTitle',
+            parent=styles['Title'],
+            fontName='Helvetica-Bold',
+            fontSize=22,
+            textColor=colors.HexColor("#2F5597"),
+            spaceAfter=30,
+            alignment=TA_CENTER
+        )
+        
+        # Estilo de Corpo de Texto Elegante
+        body_style = ParagraphStyle(
+            'ElegantBody',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=12,
+            leading=16,
+            alignment=TA_JUSTIFY,
+            spaceAfter=12
+        )
+
+        story = []
+        
+        # Extrai o título se houver uma linha inicial destacada
+        lines = content.split('\n')
+        title_text = lines[0].replace('#', '').strip() if lines else "SkinSkill Document"
+        story.append(Paragraph(title_text, title_style))
+        story.append(Spacer(1, 12))
+        
+        # Processa o restante do conteúdo
+        remaining_content = '\n'.join(lines[1:]) if len(lines) > 1 else content
+        paragraphs = remaining_content.split('\n\n')
+        
+        for p_text in paragraphs:
+            if p_text.strip():
+                # Detecta mini-cabeçalhos (linhas curtas em negrito simulado)
+                if len(p_text) < 100 and (p_text.isupper() or p_text.startswith('**')):
+                    header_text = p_text.replace('**', '').strip()
+                    story.append(Paragraph(header_text, styles['Heading2']))
+                else:
+                    story.append(Paragraph(p_text.strip(), body_style))
+                story.append(Spacer(1, 12))
+
+        # Adiciona Rodapé Institucional
+        footer_data = [['Gerado por SkinSkill MCP OS', 'v1.1.0', 'Documentação de Elite']]
+        footer_table = Table(footer_data, colWidths=[300, 50, 150])
+        footer_table.setStyle(TableStyle([
+            ('FONTNAME', (0,0), (-1,-1), 'Helvetica-Oblique'),
+            ('FONTSIZE', (0,0), (-1,-1), 8),
+            ('TEXTCOLOR', (0,0), (-1,-1), colors.grey),
+            ('ALIGN', (0,0), (0,0), 'LEFT'),
+            ('ALIGN', (-1,-1), (-1,-1), 'RIGHT'),
+            ('LINEABOVE', (0,0), (-1,0), 0.5, colors.grey)
+        ]))
+        story.append(Spacer(1, 50))
+        story.append(footer_table)
+
+        doc.build(story)
+        return f"✅ PDF Premium '{filename}' gerado com sucesso via Platypus."
     except Exception as e:
         return f"Erro ao gerar PDF: {str(e)}"
 
 @mcp.tool()
 def skinskill_generate_docx(content: str, filename: str = "documento.docx"):
-    """[FILES] Gera um documento Word (python-docx)."""
+    """[FILES] Gera um documento Word profissional (python-docx)."""
     try:
         from docx import Document
+        from docx.shared import Pt, RGBColor
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+        
         doc = Document()
-        doc.add_heading('SkinSkill Generated Document', 0)
-        doc.add_paragraph(content)
+        
+        # Título Elegante
+        lines = content.split('\n')
+        title_text = lines[0].replace('#', '').strip() if lines else "SkinSkill Document"
+        
+        heading = doc.add_heading(title_text, 0)
+        heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        for run in heading.runs:
+            run.font.color.rgb = RGBColor(47, 85, 151) # Azul Corporativo
+            run.font.name = 'Segoe UI'
+            
+        doc.add_paragraph() # Spacer
+        
+        # Processa parágrafos
+        remaining_content = '\n'.join(lines[1:]) if len(lines) > 1 else content
+        paragraphs = remaining_content.split('\n\n')
+        
+        for p_text in paragraphs:
+            if p_text.strip():
+                p = doc.add_paragraph(p_text.strip())
+                p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.runs[0] if p.runs else p.add_run(p_text.strip())
+                run.font.size = Pt(11)
+                run.font.name = 'Calibri'
+        
+        # Rodapé
+        section = doc.sections[0]
+        footer = section.footer
+        p_footer = footer.paragraphs[0]
+        p_footer.text = "Gerado por SkinSkill MCP OS | v1.1.0 | Inteligência Operacional"
+        p_footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        
         doc.save(filename)
-        return f"✅ Word '{filename}' gerado com sucesso via python-docx."
+        return f"✅ Word Profissional '{filename}' gerado com sucesso via python-docx."
     except Exception as e:
         return f"Erro ao gerar DOCX: {str(e)}"
 
 @mcp.tool()
 def skinskill_generate_pptx(content: str, filename: str = "apresentacao.pptx"):
-    """[FILES] Gera uma apresentação PowerPoint (python-pptx)."""
+    """[FILES] Gera uma apresentação PowerPoint Premium (Dark Modern Design)."""
     try:
         from pptx import Presentation
+        from pptx.util import Inches, Pt
+        from pptx.dml.color import RGBColor
+        from pptx.enum.text import PP_ALIGN
+        
         prs = Presentation()
+        
+        # 1. Slide de Título Premium
+        slide_layout = prs.slide_layouts[6] # Blank
+        slide = prs.slides.add_slide(slide_layout)
+        
+        # Fundo Dark
+        background = slide.shapes.add_shape(1, 0, 0, prs.slide_width, prs.slide_height)
+        background.fill.solid()
+        background.fill.fore_color.rgb = RGBColor(30, 30, 30) # Grafite Dark
+        background.line.fill.background()
+        
+        # Título
+        lines = content.split('\n')
+        title_text = lines[0].replace('#', '').strip() if lines else "SkinSkill Presentation"
+        
+        title_box = slide.shapes.add_textbox(Inches(1), Inches(2.5), Inches(8), Inches(2))
+        tf = title_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = title_text.upper()
+        p.alignment = PP_ALIGN.CENTER
+        p.font.bold = True
+        p.font.size = Pt(44)
+        p.font.color.rgb = RGBColor(255, 255, 255)
+        p.font.name = 'Arial Black'
+        
+        # Linha de Acento
+        line = slide.shapes.add_connector(4, Inches(3), Inches(4.5), Inches(7), Inches(4.5))
+        line.line.color.rgb = RGBColor(47, 85, 151)
+        line.line.width = Pt(4)
+        
+        # 2. Slide de Conteúdo
         slide = prs.slides.add_slide(prs.slide_layouts[1])
-        slide.shapes.title.text = "SkinSkill Presentation"
-        slide.placeholders[1].text = content
+        slide.shapes.title.text = title_text
+        slide.placeholders[1].text = '\n'.join(lines[1:]) if len(lines) > 1 else "Conteúdo Gerado Automaticamente"
+        
         prs.save(filename)
-        return f"✅ PPTX '{filename}' gerado com sucesso via python-pptx."
+        return f"✅ PPTX Premium '{filename}' gerado com sucesso via python-pptx."
     except Exception as e:
         return f"Erro ao gerar PPTX: {str(e)}"
 
 @mcp.tool()
 def skinskill_generate_xlsx(content: str, filename: str = "planilha.xlsx"):
-    """[FILES] Gera uma planilha Excel (xlsxwriter)."""
+    """[FILES] Gera uma planilha Excel Premium (Dashboard Pattern)."""
     try:
         import xlsxwriter
+        from datetime import datetime
+        
         workbook = xlsxwriter.Workbook(filename)
-        worksheet = workbook.add_worksheet()
-        worksheet.write('A1', 'SkinSkill Generated Data')
-        worksheet.write('A2', content)
+        worksheet = workbook.add_worksheet('Relatório Executivo')
+        
+        # Estilos Premium
+        header_fmt = workbook.add_format({
+            'bold': True, 'font_color': 'white', 'bg_color': '#2F5597',
+            'border': 1, 'align': 'center', 'valign': 'vcenter', 'font_name': 'Segoe UI'
+        })
+        
+        cell_fmt = workbook.add_format({
+            'align': 'center', 'valign': 'vcenter', 'font_name': 'Segoe UI', 'font_size': 10
+        })
+        
+        worksheet.hide_gridlines(2) # Efeito Dashboard
+        worksheet.set_column('A:Z', 20) # Colunas largas
+        
+        # Cabeçalho Principal
+        worksheet.merge_range('A1:D2', 'SKINSKILL INTEL REPORT', 
+                            workbook.add_format({'bold': True, 'font_size': 16, 'font_color': '#2F5597', 'valign': 'vcenter'}))
+        worksheet.write('A3', f'Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}', 
+                        workbook.add_format({'font_size': 9, 'italic': True}))
+        
+        # Processa dados tabulados
+        rows = content.split('\n')
+        current_row = 5
+        for row_data in rows:
+            if ';' in row_data:
+                cols = row_data.split(';')
+                fmt = header_fmt if current_row == 5 else cell_fmt
+                worksheet.write_row(current_row, 0, cols, fmt)
+                current_row += 1
+            elif row_data.strip():
+                worksheet.write(current_row, 0, row_data.strip(), cell_fmt)
+                current_row += 1
+                
         workbook.close()
-        return f"✅ Excel '{filename}' gerado com sucesso via xlsxwriter."
+        return f"✅ Excel Dashboard '{filename}' gerado com sucesso via xlsxwriter."
     except Exception as e:
         return f"Erro ao gerar XLSX: {str(e)}"
 
