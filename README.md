@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/branding/banner.svg" alt="SkinSkill Banner" width="100%">
 
-# SkinSkill 2.0: The Agentic OS for AI (v0.7.4)
+# SkinSkill 2.0: The Agentic OS for AI (v0.8.1)
 **The Ultimate Modular Engine for Autonomous Developers**
 
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blueviolet?style=for-the-badge&logo=ai)]()
@@ -13,29 +13,30 @@
 **Stop babysitting your AI. Start building products.**  
 *SkinSkill is the modular agentic engine that transforms standard AI assistants into Senior Engineers with a persistent brain, computer vision, local security, and an infinite, self-evolving arsenal of skills.*
 
+[📖 Ler o Guia de Experiência (TUTORIAL)](./TUTORIAL.md)
+
 </div>
 
 ---
 
-## ⚡ O que há de novo na v0.6.1 (Industrial Robustness)
+## ⚡ O que há de novo na v0.8.1 (The Shadow-Graph Era)
 
-Nesta versão, atingimos o nível de maturidade industrial com foco em **UX Zero-Touch** e **Resiliência**:
+Atingimos o nível máximo de maturidade com foco em **Consciência Arquitetural** e **Autonomia Total**:
 
-### 1. 🛡️ Skill-Forge (Auto-Evolução Segura)
-A IA agora gera ferramentas que **testam a si mesmas**. O SkinSkill cria um sandbox isolado, roda testes unitários e só instala a nova habilidade se ela passar com 100% de sucesso.
+### 1. 🧠 Shadow-Graph (Memória de Decisão)
+O SkinSkill agora guarda o **PORQUÊ** das coisas. Com o Shadow-Graph, a IA registra o racional por trás de cada decisão técnica (ex: mudar uma lib, escolher um banco de dados). O agente nunca mais "esquece" ou alucina decisões passadas.
 
-### 2. 🧠 Neural Indexer & SigMap Search
-*Adeus ao desperdício de tokens!* O comando `tisc neural-index` mapeia semanticamente seu projeto. A IA faz buscas cirúrgicas de contexto em vez de ler o repositório inteiro. **Economia de até 80% de tokens.**
+### 2. 🐣 Onboarding Proativo (Self-Configuring)
+Ao conectar o SkinSkill a qualquer pasta, ele **cria automaticamente** os arquivos `CLAUDE.md`, `GEMINI.md` e `.cursorrules`. Sua IA já começa a sessão sabendo que é um Engenheiro de Elite.
 
-### 3. 🔐 Agentic Security Audit
-Escudo local de varredura ultrarrápida que rastreia chaves AWS, segredos e senhas vazadas antes de você realizar um commit. Segurança nativa para agentes autônomos.
+### 3. 💎 Interface Premium & Progress
+Instalações de dependências agora exibem **spinners dinâmicos e barras de progresso elegantes** (via `rich`), garantindo feedback profissional sem poluir o protocolo MCP.
 
-### 4. 🗨️ Intenção Natural (UX Revolucionária)
-Você não precisa decorar comandos. Diga "Use a skinskill para criar um Word" ou "/skinskill audite a segurança" e a IA mapeia automaticamente para a ferramenta MCP correta.
+### 4. 🛡️ Skill-Forge com Validação AST
+A IA gera ferramentas que **testam a si mesmas**. Usamos análise de árvore sintática (AST) para garantir que cada nova habilidade seja validada em sandbox antes da instalação.
 
-### 5. 🎨 Design & Office Universal
-- **Visão Avançada:** Screenshots em servidores (Playwright) e extração estática de tokens CSS.
-- **Office Suite:** Geração nativa de **PDF, Word (.docx), PowerPoint (.pptx) e Excel (.xlsx)**.
+### 5. 🧠 Neural Indexer & SigMap Search
+*Economia de 80% de tokens.* A IA faz buscas cirúrgicas de contexto no índice semântico em vez de ler o repositório inteiro.
 
 ---
 
@@ -46,20 +47,21 @@ Você não precisa decorar comandos. Diga "Use a skinskill para criar um Word" o
 pip install skinskill --upgrade
 ```
 
-**2. Otimize seu Projeto:**
-```bash
-tisc neural-index
-```
-
-**3. Auto-Connect:**
+**2. Auto-Connect (Universal Setup):**
+Detecta e configura Claude Desktop e Gemini CLI automaticamente.
 ```bash
 tisc setup
 ```
-*Reinicie seu Assistente (Claude/Cursor) e fale naturalmente.*
+
+**3. Otimize seu Projeto:**
+```bash
+tisc neural-index
+```
+*Abra seu Assistente (Claude/Cursor) e fale naturalmente: "Por que decidimos usar Tailwind aqui?".*
 
 ---
 
 <div align="center">
   Feito com ❤️ por <b>SkinSkill | Agente0</b><br>
-  <a href="ROADMAP.md">Roadmap</a> • <a href="DECISIONS.md">Architecture</a> • <a href="MEMORY.md">Brain</a>
+  <a href="TUTORIAL.md">Tutorial</a> • <a href="ROADMAP.md">Roadmap</a> • <a href="DECISIONS.md">Architecture</a> • <a href="MEMORY.md">Brain</a>
 </div>
