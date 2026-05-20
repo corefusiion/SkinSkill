@@ -1,6 +1,6 @@
 # 📖 Guia de Experiência SkinSkill: Do Zero ao Engenheiro Sênior
 
-Bem-vindo ao **SkinSkill 2.0**. Este guia vai te mostrar como transformar sua IA (Claude, Cursor, Gemini) em um Engenheiro de Software Sênior Autônomo em menos de 2 minutos.
+Bem-vindo ao **SkinSkill 3.0**. Este guia vai te mostrar como transformar sua IA (Claude, Cursor, Gemini) em um Engenheiro de Software Sênior Autônomo em menos de 2 minutos.
 
 ---
 
