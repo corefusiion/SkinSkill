@@ -21,6 +21,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("SkinSkillServer")
 
+# Cache em memória para estados globais (Performance Optimization 001)
+_VISUAL_ENGINES_READY = False
+
 def ensure_skins_package():
     """Garante que o diretório skins/ existe e é um pacote Python válido."""
     try:
@@ -38,6 +41,10 @@ def ensure_skins_package():
 
 def ensure_visual_engines():
     """Garante que o Playwright está instalado com uma UI profissional (Rich)."""
+    global _VISUAL_ENGINES_READY
+    if _VISUAL_ENGINES_READY:
+        return True
+        
     import sys
     try:
         registry_path = ".skinskill/registry.json"
@@ -69,7 +76,8 @@ def ensure_visual_engines():
             reg["browsers_installed"] = True
             with open(registry_path, "w") as f: json.dump(reg, f)
             err_console.print("[bold green]✨ Motores Visuais Prontos![/bold green]")
-            return True
+        
+        _VISUAL_ENGINES_READY = True
         return True
     except Exception as e:
         print(f"⚠️ Aviso: Falha ao carregar infra visual: {e}", file=sys.stderr)
@@ -546,6 +554,40 @@ def skinskill_a2a_sync(agent_name: str, message: str):
     
     with open(inbox_path, "w", encoding="utf-8") as f: json.dump(inbox[-50:], f, indent=2)
     return f"Sincronização A2A concluída. Mensagem de {agent_name} registrada no Blackboard."
+
+@mcp.tool()
+def skinskill_optimize_self():
+    """[BRAIN] Reflexão Passiva: Analisa o próprio código e telemetria para sugerir melhorias. 
+    Este é o coração do Loop Infinito de auto-evolução.
+    """
+    server_path = "skinskill/mcp_server.py"
+    hud_path = ".skinskill/hud_feed.json"
+    
+    source_code = ""
+    if os.path.exists(server_path):
+        with open(server_path, "r", encoding="utf-8") as f:
+            source_code = f.read()
+    
+    recent_logs = []
+    if os.path.exists(hud_path):
+        try:
+            with open(hud_path, "r", encoding="utf-8") as f:
+                recent_logs = json.load(f)
+        except: pass
+    
+    metrics = {
+        "file_size_kb": round(len(source_code) / 1024, 2),
+        "tool_count": source_code.count("@mcp.tool()"),
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+    
+    analysis = {
+        "metrics": metrics,
+        "recent_activity": recent_logs[-10:],
+        "instruction": "Analise o source_code em busca de redundâncias, bugs latentes ou oportunidades de performance. Use skinskill_inject para aplicar melhorias."
+    }
+    
+    return json.dumps(analysis, indent=2)
 
 if __name__ == "__main__":
     mcp.run()
