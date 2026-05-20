@@ -1,6 +1,6 @@
 [project]
 name = "skinskill"
-version = "0.9.0"
+version = "1.0.0"
 description = "SkinSkill: The Agentic OS for AI. Universal MCP for Autonomous Sniffing, Healing, and Design Mirroring."
 authors = [
     { name = "Agente0", email = "suporte@agente0.ai" },

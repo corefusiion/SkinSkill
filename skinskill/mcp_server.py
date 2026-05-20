@@ -433,7 +433,65 @@ def skinskill_static_ui_extract(dir_path: str = "."):
     return json.dumps({"colors": list(colors)[:50]}, indent=2)
 
 @mcp.tool()
+def skinskill_ghost_hand(action: str, x: int = 0, y: int = 0, text: str = "", key: str = ""):
+    """[GHOST-HAND] Controle direto do OS (Mouse/Teclado). Ações: 'click', 'move', 'type', 'press'."""
+    try:
+        import pyautogui
+        if action == "click":
+            pyautogui.click(x, y)
+        elif action == "move":
+            pyautogui.moveTo(x, y, duration=0.5)
+        elif action == "type":
+            pyautogui.write(text, interval=0.02)
+        elif action == "press":
+            pyautogui.press(key)
+        return f"✅ Ghost Hand executou: {action}"
+    except ImportError:
+        return "Erro: 'pyautogui' não está instalado."
+    except Exception as e:
+        return f"Erro no Ghost Hand: {e}"
+
+@mcp.tool()
+def skinskill_distill_project(dir_path: str = "."):
+    """[BRAIN] Neural Distillation: Comprime o projeto extraindo apenas assinaturas de funções/classes. Economia de 99% de tokens."""
+    import ast
+    import re
+    distilled = {}
+    for root, dirs, files in os.walk(dir_path):
+        if any(x in root for x in [".git", "node_modules", "venv", "__pycache__"]): continue
+        for file in files:
+            path = os.path.join(root, file)
+            sigs = []
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if file.endswith(".py"):
+                    tree = ast.parse(content)
+                    sigs = [node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
+                elif file.endswith((".js", ".ts", ".jsx", ".tsx")):
+                    matches = re.findall(r'(?:function|class)\s+([a-zA-Z0-9_]+)|const\s+([a-zA-Z0-9_]+)\s*=\s*(?:=>|function)', content)
+                    sigs = [m[0] or m[1] for m in matches if m[0] or m[1]]
+                if sigs: distilled[path] = list(set(sigs))
+            except: pass
+    return json.dumps(distilled, indent=2)
+
+@mcp.tool()
+def skinskill_hud_notify(message: str, status: str = "info"):
+    """[HUD] Envia uma notificação em tempo real para o Head-Up Display do desenvolvedor."""
+    hud_path = ".skinskill/hud_feed.json"
+    os.makedirs(".skinskill", exist_ok=True)
+    feed = []
+    if os.path.exists(hud_path):
+        try:
+            with open(hud_path, "r", encoding="utf-8") as f: feed = json.load(f)
+        except: pass
+    feed.append({"time": datetime.datetime.now().strftime("%H:%M:%S"), "msg": message, "status": status})
+    with open(hud_path, "w", encoding="utf-8") as f: json.dump(feed[-15:], f)
+    return "✅ HUD notificado."
+
+@mcp.tool()
 def skinskill_watchdog(log_path: str, tail_lines: int = 50):
+
     """[WATCHDOG] Lê as últimas linhas de um arquivo de log para monitoramento autônomo de falhas em background."""
     if not os.path.exists(log_path): return f"Arquivo de log {log_path} não encontrado."
     try:

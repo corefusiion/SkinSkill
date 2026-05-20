@@ -369,5 +369,65 @@ def dashboard(port: int = typer.Option(8080, help="Porta do dashboard")):
         except KeyboardInterrupt:
             console.print("\n[yellow]Dashboard encerrado.[/yellow]")
 
+@app.command()
+def hud(port: int = typer.Option(8081, help="Porta do HUD")):
+    """👁️ Inicia o Live HUD (Head-Up Display) para ver o fluxo da IA em tempo real."""
+    console.print(Panel(f"[bold green]👁️ Iniciando Live HUD na porta {port}...[/bold green]", border_style="green"))
+    import http.server
+    import socketserver
+    
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head><title>SkinSkill Live HUD</title>
+    <style>
+        body { background-color: rgba(13, 17, 23, 0.95); color: #00ff00; font-family: 'Courier New', monospace; padding: 10px; margin: 0; }
+        .log-entry { border-left: 3px solid #00ff00; padding-left: 10px; margin-bottom: 8px; font-size: 14px; }
+        .log-time { color: #58a6ff; font-weight: bold; }
+        .status-error { border-left-color: #ff0000; color: #ff0000; }
+        .status-warning { border-left-color: #ffcc00; color: #ffcc00; }
+        h3 { color: #fff; margin-top: 0; }
+    </style>
+    </head>
+    <body>
+        <h3>[ 👁️ SkinSkill HUD - Agent Feed ]</h3>
+        <div id="feed">Aguardando sinais neurais da IA...</div>
+        <script>
+            function fetchFeed() {
+                fetch('/.skinskill/hud_feed.json')
+                    .then(r => r.ok ? r.json() : [])
+                    .then(data => {
+                        const feedDiv = document.getElementById('feed');
+                        feedDiv.innerHTML = '';
+                        data.reverse().forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = `log-entry status-${item.status}`;
+                            div.innerHTML = `<span class="log-time">[${item.time}]</span> ${item.msg}`;
+                            feedDiv.appendChild(div);
+                        });
+                    }).catch(e => console.log("Aguardando logs..."));
+            }
+            setInterval(fetchFeed, 2000);
+            fetchFeed();
+        </script>
+    </body>
+    </html>
+    """
+    os.makedirs(".skinskill", exist_ok=True)
+    with open(".skinskill/hud.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+        
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == '/': self.path = '/.skinskill/hud.html'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+    class SilentHandler(Handler):
+        def log_message(self, format, *args): pass
+
+    with socketserver.TCPServer(("", port), SilentHandler) as httpd:
+        console.print(f"[bold cyan]👁️ Live HUD rodando em http://localhost:{port}[/bold cyan]")
+        try: httpd.serve_forever()
+        except KeyboardInterrupt: console.print("\n[yellow]HUD encerrado.[/yellow]")
+
 if __name__ == "__main__":
     app()

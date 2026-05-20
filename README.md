@@ -2,16 +2,16 @@
 
 <img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/branding/banner.svg" alt="SkinSkill Banner" width="100%">
 
-# SkinSkill 3.0: The World's Most Complete Agent OS (v0.9.0)
-**The Definitive Infrastructure for Autonomous Engineering**
+# SkinSkill 4.0: The Grand Slam Edition (v1.0.0)
+**The Ultimate Infrastructure for OS-Level Autonomous Engineering**
 
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol-blueviolet?style=for-the-badge&logo=ai)]()
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)]()
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)]()
 [![PyPI](https://img.shields.io/pypi/v/skinskill?style=for-the-badge&color=orange)]()
 
-**The global standard for Agentic AI.**  
-*SkinSkill 3.0 is a world-class MCP ecosystem that provides your AI with a command center, visual TDD, autonomous monitoring, and multi-agent synchronization.*
+**Welcome to the v1.0.0 milestone.**  
+*SkinSkill 4.0 is no longer just a tool—it's a digital ghost that can control your OS, distill massive projects into bytes, and provide a real-time HUD for agentic awareness.*
 
 [📖 Read the Experience Guide (TUTORIAL)](./TUTORIAL.md)
 
@@ -19,30 +19,27 @@
 
 ---
 
-## 🌍 O que torna o SkinSkill 3.0 ÚNICO no Mundo?
+## ⚡ The Grand Slam (Revolutionary Features)
 
-Nesta versão, integramos os **4 Pilares da Engenharia Agêntica Moderna**, baseados nas maiores demandas das comunidades globais:
+Nesta versão v1.0.0, entregamos o que nenhum outro MCP no mundo possui de forma integrada:
 
-### 1. 🖥️ SkinSkill Command Center (Dashboard)
-Chega de MCPs invisíveis. O novo comando `tisc dashboard` sobe uma **Web UI local (localhost:8080)** elegante que mostra em tempo real o fluxo de pensamento da IA, o mapa do projeto e o Shadow-Graph.
+### 1. 👁️ OS-Level Ghost Hand
+Dê à sua IA controle total sobre o seu computador. A ferramenta `skinskill_ghost_hand` permite que o agente clique, digite e interaja com aplicativos fora da IDE. "SkinSkill, abra o navegador e configure meu Docker Desktop" agora é uma realidade.
 
-### 2. 🧬 O Watchdog Autônomo
-A ferramenta `skinskill_watchdog` permite que sua IA monitore logs e terminais em background. Se algo quebrar, a IA percebe sozinha e propõe a auto-cura antes mesmo de você notar.
+### 2. 🧠 Neural Project Distillation
+Reduza o consumo de tokens em **99%**. Com `skinskill_distill_project`, a IA não lê o código bruto; ela lê uma "matriz de assinaturas" comprimida de todo o projeto, permitindo entender arquiteturas gigantes em milissegundos.
 
-### 3. 👁️ Vision-Audit (Visual TDD)
-Com `skinskill_vision_audit`, o agente captura screenshots da sua UI e da URL de referência, usa visão computacional para comparar pixels e gera as correções visuais automaticamente.
-
-### 4. 🔗 Sincronização Inter-Agente (A2A)
-Usando `skinskill_a2a_sync`, suas instâncias de IA (Cursor, Claude Desktop, CLI) compartilham o mesmo "Quadro Negro" (Blackboard) de contexto. O que um agente aprende, todos os outros sabem instantaneamente.
+### 3. 📊 Live HUD (Head-Up Display)
+O MCP agora tem rosto. O comando `tisc hud` abre uma janela transparente em tempo real que mostra o "batimento cardíaco" do seu agente, logs de erro e o progresso das tarefas diretamente na sua tela.
 
 ---
 
-## ⚡ Outras Super Habilidades (Baterias Incluídas)
+## 🌍 Os 4 Pilares da v0.9.0 (Baterias Incluídas)
 
-- **Shadow-Graph:** Memória arquitetural que guarda o racional de cada decisão.
-- **Skill-Forge TDD:** Criação de ferramentas com auto-validação em sandbox.
-- **Neural Indexer:** Economia de 80% de tokens via busca semântica.
-- **Office Suite:** Geração nativa de Word, Excel, PPTX e PDF.
+- **🖥️ Command Center Dashboard:** Web UI futurista para monitoramento de decisões.
+- **🧬 Autonomous Watchdog:** Monitoramento de logs em background com auto-cura.
+- **👁️ Visual Audit (Visual TDD):** Comparação de pixels entre UIs reais e referências.
+- **🔗 Inter-Agent Sync (A2A):** Sincronização de contexto entre Cursor, Claude e CLI.
 
 ---
 
@@ -58,9 +55,9 @@ pip install skinskill --upgrade
 tisc setup
 ```
 
-**3. Open Command Center:**
+**3. Launch the HUD:**
 ```bash
-tisc dashboard
+tisc hud
 ```
 
 ---
