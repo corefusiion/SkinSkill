@@ -156,40 +156,52 @@ def skinskill_sniff():
     return json.dumps(deep_sniff(), indent=2)
 
 @mcp.tool()
-def skinskill_context_save(context_description: str, current_goal: str, last_error: str = "None"):
-    """[BRAIN] Salva o estado mental da conversa para recuperação."""
-    memory_path = ".skinskill/memory_graph.json"
+def skinskill_context_save(goal: str, action_taken: str, rationale: str, consequences: str = "Pending"):
+    """[SHADOW-GRAPH] Registra uma decisão arquitetural ou marco do projeto.
+    Mapeia o 'PORQUÊ' (rationale) e as 'CONSEQUÊNCIAS' para evitar erros futuros.
+    """
+    memory_path = ".skinskill/shadow_graph.json"
     history = []
     if os.path.exists(memory_path):
         try:
-            with open(memory_path, "r", encoding="utf-8") as f: 
+            with open(memory_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, list): history = data
         except: history = []
     
     entry = {
         "timestamp": datetime.datetime.now().isoformat(),
-        "description": context_description,
-        "goal": current_goal,
-        "error": last_error
+        "goal": goal,
+        "action": action_taken,
+        "rationale": rationale,
+        "consequences": consequences
     }
     history.append(entry)
-    history = history[-50:]
-    with open(memory_path, "w", encoding="utf-8") as f: json.dump(history, f, indent=2)
-    return "✅ Contexto neural preservado."
+    
+    # Mantém apenas os últimos 100 marcos importantes
+    history = history[-100:]
+    with open(memory_path, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2)
+    return "🧠 Shadow-Graph Atualizado: Decisão e Racional registrados com sucesso."
 
 @mcp.tool()
-def skinskill_context_recall():
-    """[BRAIN] Recupera o histórico de progresso e decisões."""
-    memory_path = ".skinskill/memory_graph.json"
-    if not os.path.exists(memory_path): return "Nenhum histórico encontrado."
-    with open(memory_path, "r", encoding="utf-8") as f: 
-        try:
-            data = json.load(f)
-            if isinstance(data, list): return json.dumps(data, indent=2)
-            return "Índice Neural detectado, mas não histórico de progresso."
-        except:
-            return "Erro ao ler histórico neural."
+def skinskill_shadow_query(query: str):
+    """[SHADOW-GRAPH] Consulta a 'Mente do Arquiteto' para entender decisões passadas ou evitar re-trabalho."""
+    memory_path = ".skinskill/shadow_graph.json"
+    if not os.path.exists(memory_path): return "Nenhuma decisão arquitetural encontrada no Shadow-Graph."
+    
+    with open(memory_path, "r", encoding="utf-8") as f:
+        history = json.load(f)
+        
+    results = []
+    for entry in history:
+        if query.lower() in str(entry).lower():
+            results.append(entry)
+            
+    if not results:
+        return f"Nenhuma decisão encontrada para '{query}'. Mas lembre-se: 'A melhor decisão é a que ainda não foi tomada'."
+    
+    return json.dumps(results[-5:], indent=2)
 
 @mcp.tool()
 def skinskill_inject(code: str, target_file: str, injection_point: str = "end"):
