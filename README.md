@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/skillcode/img/img01.png" alt="SkillCode Agent" width="300">
+<img src="https://raw.githubusercontent.com/corefusiion/SkinSkill/main/skillcode/img/img01.png" alt="SkillCode Agent" width="650">
 
 # 🧠 SkillCode (skc)
 **The Ultimate Self-Evolving Developer Agent & Embedded MCP OS for AI**
