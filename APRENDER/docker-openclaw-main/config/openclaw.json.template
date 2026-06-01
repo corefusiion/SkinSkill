@@ -1,0 +1,48 @@
+{
+  "auth": {
+    "profiles": {}
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    },
+    "controlUi": {
+      "allowInsecureAuth": true
+    }
+  },
+  "logging": {
+    "level": "info",
+    "consoleLevel": "info",
+    "consoleStyle": "pretty",
+    "redactSensitive": "tools"
+  },
+  "diagnostics": {
+    "enabled": true
+  },
+  "channels": {
+    "telegram": {
+      "enabled": false,
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  }
+}

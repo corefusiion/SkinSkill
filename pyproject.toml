@@ -1,5 +1,5 @@
 [project]
-name = "skinskill"
+name = "skillcode"
 version = "1.1.0"
 description = "SkinSkill: The Infinite Loop Agentic OS. Universal MCP for Self-Evolving AI Engineering, OS Control, and Design DNA."
 authors = [
@@ -35,7 +35,7 @@ Documentation = "https://github.com/corefusiion/SkinSkill#readme"
 Issues = "https://github.com/corefusiion/SkinSkill/issues"
 
 [project.scripts]
-tisc = "skinskill.cli:app"
+skc = "skillcode.cli:app"
 
 [build-system]
 requires = ["hatchling"]
