@@ -67,6 +67,13 @@ def show_header():
         
     console.print(f"[bold white]🧬 SkillCode v1.2.0[/bold white] | Onde o código cria a si mesmo. [dim]Agente0.ai[/dim]\n")
 
+@app.callback(invoke_without_command=True)
+def main(ctx: typer.Context):
+    """🧬 SkillCode: The Self-Evolving AI Developer Agent CLI & Embedded MCP OS"""
+    if ctx.invoked_subcommand is None:
+        show_header()
+        console.print("[bold yellow]Dica:[/bold yellow] Use [bold cyan]skc run[/bold cyan] para iniciar o loop de tarefas ou [bold cyan]skc --help[/bold cyan] para ver todos os comandos.\n")
+
 @app.command()
 def config():
     """Configura interativamente as chaves de API e preferências do SkillCode."""
