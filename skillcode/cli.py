@@ -1,3 +1,13 @@
+import sys
+
+# Force stdout/stderr to use UTF-8 on Windows to prevent UnicodeEncodeError with emojis
+if sys.platform.startswith("win"):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        pass
+
 import typer
 from rich.console import Console
 from rich.panel import Panel
