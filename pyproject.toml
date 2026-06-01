@@ -37,6 +37,16 @@ Issues = "https://github.com/corefusiion/SkinSkill/issues"
 [project.scripts]
 skc = "skillcode.cli:app"
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/skillcode",
+    "/README.md",
+    "/pyproject.toml",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["skillcode"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
