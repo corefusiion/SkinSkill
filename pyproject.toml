@@ -1,6 +1,6 @@
 [project]
 name = "skillcode"
-version = "1.1.2"
+version = "1.1.3"
 description = "SkinSkill: The Infinite Loop Agentic OS. Universal MCP for Self-Evolving AI Engineering, OS Control, and Design DNA."
 authors = [
     { name = "Agente0", email = "suporte@agente0.ai" },
